@@ -216,7 +216,7 @@ export default function LandingHomePage() {
         backgroundImage: "url('/能力测评认证平台.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        color: "#fff", padding: "60px 20px 50px", textAlign: "center", position: "relative", overflow: "hidden", minHeight: 300,
+        color: "#fff", padding: "60px 20px 50px", textAlign: "center", position: "relative", overflow: "hidden", minHeight: 360,
       }}>
         <div style={{ position: "absolute", inset: 0, background: "rgba(15, 23, 42, 0.45)", backdropFilter: "blur(1px)" }} />
         <div style={{ maxWidth: 720, margin: "0 auto", position: "relative", zIndex: 1 }}>
