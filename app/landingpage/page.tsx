@@ -213,13 +213,14 @@ export default function LandingHomePage() {
     <div>
       {/* ═══ Hero Banner ═══ */}
       <div style={{
-        background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%)",
+        backgroundImage: "url('/能力测评认证平台.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
         color: "#fff", padding: "60px 20px 50px", textAlign: "center", position: "relative", overflow: "hidden",
       }}>
-        <div style={{ position: "absolute", top: -80, right: -80, width: 300, height: 300, background: "rgba(255,255,255,0.04)", borderRadius: "50%" }} />
-        <div style={{ position: "absolute", bottom: -60, left: "5%", width: 200, height: 200, background: "rgba(255,255,255,0.04)", borderRadius: "50%" }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(15, 23, 42, 0.45)", backdropFilter: "blur(1px)" }} />
         <div style={{ maxWidth: 720, margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <h1 style={{ fontSize: 40, fontWeight: "bold", marginBottom: 12, letterSpacing: 1 }}>能力测评中心</h1>
+           <h1 style={{ fontSize: 40, fontWeight: "bold", marginBottom: 12, letterSpacing: 1 }}>能力评价与测评资源管理平台</h1>
           <p style={{ fontSize: 15, opacity: 0.85, marginBottom: 28 }}>集测评资源、岗位能力认定、毕业设计、学生画像于一体的一站式能力成长平台</p>
           <div style={{
             background: "#fff", borderRadius: 50, padding: "5px 5px 5px 24px",
