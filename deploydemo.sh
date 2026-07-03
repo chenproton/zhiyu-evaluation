@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# deploydemo.sh - 演示环境一键部署脚本（优化版）
-# 在项目目录构建演示环境产物，构建前备份本地 .next，部署完成后还原，
-# 确保演示环境链接正确且不影响本地 deploy.sh 部署的服务。
+# deploydemo.sh - 演示环境一键部署脚本（standalone 复用版）
+# 复用本地 deploy.sh 构建好的 .next/standalone 产物，复制到 /dev/shm 后替换 IP，
+# 再上传到远程演示服务器。全程不重新构建、不停止本地 PM2、不破坏本地 .next。
 #
 set -euo pipefail
 
@@ -21,14 +21,9 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REMOTE_BASE="/var/www"
 REMOTE_DIR="$REMOTE_BASE/$SITE_NAME"
 STANDALONE_DIR="$SCRIPT_DIR/.next/standalone"
-STATIC_DIR="$SCRIPT_DIR/.next/static"
-PUBLIC_DIR="$SCRIPT_DIR/public"
-SERVER_DIR="$SCRIPT_DIR/.next/server"
-DEMO_PKG_DIR="/tmp/${SITE_NAME}-demo-pkg"
+DEMO_PKG_DIR="/dev/shm/${SITE_NAME}-demo-pkg"
+DATA_DIR="$SCRIPT_DIR/data"
 SSH_PORT="${SSH_PORT:-22}"
-
-# 本地构建产物备份目录（放在 /tmp 下，避免污染源码）
-LOCAL_BUILD_BACKUP_DIR="/tmp/${SITE_NAME}-local-build-backup"
 
 # 安全提示
 if [ -z "${DEMO_PASS:-}" ]; then
@@ -47,151 +42,58 @@ fi
 # 通过环境变量传密码，避免出现在进程列表
 export SSHPASS="$DEMO_PASS"
 SSH_CMD="sshpass -e ssh"
-SCP_CMD="sshpass -e scp"
 SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=60 -o ServerAliveCountMax=3 -p $SSH_PORT"
 
 cd "$SCRIPT_DIR"
-
-# ==================== IP 替换与还原 ====================
-backup_files=()
-
-replace_ip() {
-  local old="$1" new="$2"
-  local files
-  local old_pattern
-  old_pattern=$(sed 's/\./\\./g' <<< "$old")
-
-  mapfile -t files < <(grep -rlF \
-    --exclude-dir=.git \
-    --exclude-dir=node_modules \
-    --exclude-dir=.next \
-    --exclude-dir=dist \
-    --exclude='*.demo-bak' \
-    --exclude='deploydemo.sh' \
-    --exclude='deploy.sh' \
-    --exclude='deploycom.sh' \
-    --exclude='deploy.ps1' \
-    --exclude='*.tar.gz' \
-    "$old" . 2>/dev/null || true)
-
-  for f in "${files[@]}"; do
-    if [ -f "$f" ]; then
-      cp "$f" "$f.demo-bak"
-      backup_files+=("$f")
-      sed -i "s/$old_pattern/$new/g" "$f"
-      echo "  已替换: $f"
-    fi
-  done
-}
-
-restore_ip() {
-  if [ ${#backup_files[@]} -eq 0 ]; then
-    return 0
-  fi
-  echo ""
-  echo ">>> 还原源码中的 IP 配置..."
-  for f in "${backup_files[@]}"; do
-    if [ -f "$f.demo-bak" ]; then
-      mv "$f.demo-bak" "$f"
-      echo "  已还原: $f"
-    fi
-  done
-}
-
-backup_local_build() {
-  # 先停止本地 PM2 服务，避免 .next 中的文件被占用导致无法备份/还原
-  if command -v pm2 &>/dev/null; then
-    pm2 stop "$SITE_NAME" >/dev/null 2>&1 || true
-  fi
-  # 等待文件句柄释放
-  sleep 1
-
-  if [ -d "$SCRIPT_DIR/.next" ]; then
-    echo ">>> 备份本地构建产物到 $LOCAL_BUILD_BACKUP_DIR ..."
-    rm -rf "$LOCAL_BUILD_BACKUP_DIR"
-    cp -a "$SCRIPT_DIR/.next" "$LOCAL_BUILD_BACKUP_DIR"
-  fi
-}
-
-restore_local_build() {
-  if [ -n "${LOCAL_BUILD_BACKUP_DIR:-}" ] && [ -d "$LOCAL_BUILD_BACKUP_DIR" ]; then
-    echo ""
-    echo ">>> 还原本地构建产物..."
-    # 先停止本地 PM2 服务，确保 .next 可以被完整替换
-    if command -v pm2 &>/dev/null; then
-      pm2 stop "$SITE_NAME" >/dev/null 2>&1 || true
-    fi
-    sleep 1
-
-    rm -rf "$SCRIPT_DIR/.next"
-    cp -a "$LOCAL_BUILD_BACKUP_DIR" "$SCRIPT_DIR/.next"
-    rm -rf "$LOCAL_BUILD_BACKUP_DIR"
-
-    # 重启本地 PM2 服务
-    if command -v pm2 &>/dev/null; then
-      pm2 restart "$SITE_NAME" --update-env >/dev/null 2>&1 || true
-    fi
-  fi
-}
-
-# 脚本退出时还原源码 IP 和本地构建产物
-trap 'restore_ip; restore_local_build' EXIT
-
-# 清理上次残留的备份文件
-find . -maxdepth 3 -name '*.demo-bak' -type f -delete 2>/dev/null || true
 
 # ==================== 主流程 ====================
 echo ""
 echo "🚀 启动演示环境部署: [$SITE_NAME] -> http://$DEMO_HOST:$PORT"
 echo ""
 
-echo "[1/5] 替换源码中的旧 IP ($OLD_IP -> $DEMO_HOST)..."
-replace_ip "$OLD_IP" "$DEMO_HOST"
-
-echo ""
-echo "[1.5/5] 备份本地构建产物..."
-backup_local_build
-
-echo ""
-echo "[2/5] 清理旧构建..."
-rm -rf "$STANDALONE_DIR" "$STATIC_DIR" "$SERVER_DIR"
-
-echo ""
-echo "[3/5] 安装依赖并构建（使用 webpack 以绕过 Turbopack standalone 问题）..."
-if [ ! -d "node_modules" ] || [ "${FORCE_INSTALL:-0}" = "1" ]; then
-  pnpm install --prefer-offline --no-frozen-lockfile
-else
-  echo "node_modules 已存在，跳过依赖安装（设置 FORCE_INSTALL=1 可强制重新安装）"
-fi
-pnpm exec next build --webpack
-
-echo ""
-echo "[4/5] 组装 standalone 产物..."
-if [ -d "$SERVER_DIR" ]; then
-  mkdir -p "$STANDALONE_DIR/.next/server"
-  rsync -a --delete --exclude="*.map" "$SERVER_DIR/" "$STANDALONE_DIR/.next/server/"
-fi
-if [ -d "$STATIC_DIR" ]; then
-  mkdir -p "$STANDALONE_DIR/.next/static"
-  rsync -a --delete --exclude="*.map" "$STATIC_DIR/" "$STANDALONE_DIR/.next/static/"
-fi
-if [ -d "$PUBLIC_DIR" ]; then
-  mkdir -p "$STANDALONE_DIR/public"
-  rsync -a --delete --exclude="*.map" "$PUBLIC_DIR/" "$STANDALONE_DIR/public/"
+# ── 0. 确保本地 standalone 产物已存在 ─────────────────────────────────
+if [ ! -f "$STANDALONE_DIR/server.js" ]; then
+  echo "❌ 本地 standalone 产物不存在：$STANDALONE_DIR/server.js"
+  echo "   请先运行 ./deploy.sh 完成本地构建，再执行本脚本。"
+  exit 1
 fi
 
-echo ""
-echo "[4.5/5] 复制产物到打包目录..."
+# ── 1. 复制 standalone 产物到 /dev/shm ────────────────────────────────
+echo "[1/4] 复制本地 standalone 产物到 $DEMO_PKG_DIR ..."
 rm -rf "$DEMO_PKG_DIR"
-rsync -a --delete --exclude="*.map" "$STANDALONE_DIR/" "$DEMO_PKG_DIR/"
-# 同时复制 data 目录中的配置（如平台链接等）
-if [ -d "$SCRIPT_DIR/data" ]; then
-  echo ">>> 复制 data 目录..."
-  rsync -a "$SCRIPT_DIR/data/" "$DEMO_PKG_DIR/data/"
+mkdir -p "$DEMO_PKG_DIR"
+rsync -a --delete --exclude='*.map' "$STANDALONE_DIR/" "$DEMO_PKG_DIR/"
+
+# 同时复制 data 目录中的配置（如平台链接等），确保运行时读取到的是 demo 配置
+if [ -d "$DATA_DIR" ]; then
+  echo "      同步 data 目录..."
+  mkdir -p "$DEMO_PKG_DIR/data"
+  rsync -a --delete "$DATA_DIR/" "$DEMO_PKG_DIR/data/"
 fi
 
+# ── 2. 替换源码 IP 为演示域名 ─────────────────────────────────────────
 echo ""
-echo "[5/5] 上传并部署到演示服务器 $DEMO_HOST..."
+echo "[2/4] 替换产物中的旧 IP ($OLD_IP -> $DEMO_HOST) ..."
+OLD_PATTERN=$(sed 's/\./\\./g' <<< "$OLD_IP")
+REPLACED_COUNT=0
+
+mapfile -t files < <(grep -rlF "$OLD_IP" "$DEMO_PKG_DIR" 2>/dev/null || true)
+for f in "${files[@]}"; do
+  if [ -f "$f" ]; then
+    sed -i "s/$OLD_PATTERN/$DEMO_HOST/g" "$f"
+    REPLACED_COUNT=$((REPLACED_COUNT + 1))
+  fi
+done
+echo "      已替换 $REPLACED_COUNT 个文件"
+
+RESIDUAL=$(grep -rlF "$OLD_IP" "$DEMO_PKG_DIR" 2>/dev/null | wc -l || true)
+if [ "${RESIDUAL:-0}" -ne 0 ]; then
+  echo "⚠️  警告：仍有 $RESIDUAL 个文件包含旧 IP"
+fi
+
+# ── 3. 上传并部署到演示服务器 ─────────────────────────────────────────
+echo ""
+echo "[3/4] 上传并部署到演示服务器 $DEMO_HOST ..."
 
 $SSH_CMD $SSH_OPTS "$DEMO_USER@$DEMO_HOST" \
   "rm -rf $REMOTE_DIR && mkdir -p $REMOTE_DIR && chown $DEMO_USER:$DEMO_USER $REMOTE_DIR"
@@ -204,6 +106,10 @@ rsync -az --delete \
   --exclude='logs/' \
   "$DEMO_PKG_DIR/" \
   "$DEMO_USER@$DEMO_HOST:$REMOTE_DIR/"
+
+# ── 4. 远程启动服务 ───────────────────────────────────────────────────
+echo ""
+echo "[4/4] 远程启动 PM2 服务 ..."
 
 $SSH_CMD $SSH_OPTS "$DEMO_USER@$DEMO_HOST" \
   "export SITE_NAME='$SITE_NAME'; export PORT='$PORT'; export REMOTE_DIR='$REMOTE_DIR'; bash -s" << 'REMOTE_EOF'
@@ -236,6 +142,9 @@ REMOTE_EOF
 
 $SSH_CMD $SSH_OPTS "$DEMO_USER@$DEMO_HOST" \
   "pm2 restart '$SITE_NAME' --update-env" >/dev/null 2>&1 || true
+
+# ── 5. 清理临时产物 ───────────────────────────────────────────────────
+rm -rf "$DEMO_PKG_DIR"
 
 echo ""
 echo "✨ [$SITE_NAME] 演示环境部署完成！"

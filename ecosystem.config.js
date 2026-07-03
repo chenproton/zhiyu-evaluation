@@ -2,16 +2,21 @@ module.exports = {
   apps: [
     {
       name: 'evaluation',
-      cwd: '/var/www/evaluation',
-      script: 'pnpm',
-      args: 'start',
+      cwd: './.next/standalone',
+      script: 'server.js',
       instances: 1,
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
         PORT: 3005,
+        HOSTNAME: '0.0.0.0',
       },
-      // 日志配置 - 使用相对路径或 PM2 默认路径，避免 /var/log/pm2 权限问题
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3005,
+        HOSTNAME: '0.0.0.0',
+      },
+      // 日志配置 - 使用相对路径，避免 /var/log/pm2 权限问题
       error_file: 'logs/error.log',
       out_file: 'logs/out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
@@ -26,4 +31,4 @@ module.exports = {
       listen_timeout: 10000,
     },
   ],
-}
+};

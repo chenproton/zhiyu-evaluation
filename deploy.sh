@@ -63,17 +63,17 @@ fi
 echo ""
 echo "[5/4] 本地 PM2 启动服务..."
 
-# 彻底删除旧进程防止残留
+# 先清理可能存在的残留 PM2 进程和端口占用
 pm2 delete "$SITE_NAME" &>/dev/null || true
+PM2_PID=$(lsof -t -i:"$PORT" 2>/dev/null || true)
+if [ -n "$PM2_PID" ]; then
+  echo "   发现端口 $PORT 被占用，正在清理..."
+  kill -9 "$PM2_PID" 2>/dev/null || true
+fi
+sleep 1
 
-cd "$STANDALONE_DIR"
-NODE_BIN=$(command -v node || echo "/usr/local/bin/node")
-
-# 启动新进程
-PORT="$PORT" HOSTNAME="0.0.0.0" pm2 start server.js \
-  --name "$SITE_NAME" \
-  --interpreter "$NODE_BIN" \
-  --restart-delay 3000
+# 使用 ecosystem.config.js 启动，配置集中管理
+pm2 start ecosystem.config.js --env production
 
 pm2 save > /dev/null
 
