@@ -218,7 +218,7 @@ export default function LandingHomePage() {
         backgroundPosition: "center",
         color: "#fff", padding: "60px 20px 50px", textAlign: "center", position: "relative", overflow: "hidden", minHeight: 360,
       }}>
-        <div style={{ position: "absolute", inset: 0, background: "rgba(15, 23, 42, 0.45)", backdropFilter: "blur(1px)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(15, 23, 42, 0.55)" }} />
         <div style={{ maxWidth: 720, margin: "0 auto", position: "relative", zIndex: 1 }}>
            <h1 style={{ fontSize: 40, fontWeight: "bold", marginBottom: 12, letterSpacing: 1 }}>能力评价与测评资源管理平台</h1>
           <p style={{ fontSize: 15, opacity: 0.85, marginBottom: 28 }}>集测评资源、岗位能力认定、毕业设计、学生画像于一体的一站式能力成长平台</p>
