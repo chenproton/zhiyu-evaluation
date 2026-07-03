@@ -162,6 +162,12 @@ if [ -d "$PUBLIC_DIR" ]; then
   rsync -a --delete --exclude="*.map" "$PUBLIC_DIR/" "$STANDALONE_DIR/public/"
 fi
 
+# 同时替换 data 目录中的 IP（如平台链接配置等），确保 standalone 产物中也生效
+if [ -d "$SCRIPT_DIR/data" ]; then
+  echo ">>> 替换 data 目录中的 IP..."
+  replace_ip "$OLD_IP" "$DEMO_HOST"
+fi
+
 echo ""
 echo "[5/5] 上传并部署到演示服务器 $DEMO_HOST..."
 
