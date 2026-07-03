@@ -213,7 +213,7 @@ export default function LandingHomePage() {
     <div>
       {/* ═══ Hero Banner ═══ */}
       <div style={{
-        backgroundImage: "url('/能力测评认证平台.png')",
+        backgroundImage: "url('/2.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         color: "#fff", padding: "60px 20px 50px", textAlign: "center", position: "relative", overflow: "hidden", minHeight: 360,
