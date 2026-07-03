@@ -1,7 +1,8 @@
 #!/bin/bash
 #
-# deploydemo.sh - 演示环境一键部署脚本
-# 将本项目构建后部署到 demo2.zhiyu.com.cn，并把跳转链接中的 IP 替换为演示服务器 IP
+# deploydemo.sh - 演示环境一键部署脚本（优化版）
+# 在项目目录构建演示环境产物，构建前备份本地 .next，部署完成后还原，
+# 确保演示环境链接正确且不影响本地 deploy.sh 部署的服务。
 #
 set -euo pipefail
 
@@ -23,6 +24,7 @@ STANDALONE_DIR="$SCRIPT_DIR/.next/standalone"
 STATIC_DIR="$SCRIPT_DIR/.next/static"
 PUBLIC_DIR="$SCRIPT_DIR/public"
 SERVER_DIR="$SCRIPT_DIR/.next/server"
+DEMO_PKG_DIR="/tmp/${SITE_NAME}-demo-pkg"
 SSH_PORT="${SSH_PORT:-22}"
 
 # 本地构建产物备份目录（放在 /tmp 下，避免污染源码）
@@ -89,12 +91,21 @@ restore_ip() {
   echo ""
   echo ">>> 还原源码中的 IP 配置..."
   for f in "${backup_files[@]}"; do
-    mv "$f.demo-bak" "$f"
-    echo "  已还原: $f"
+    if [ -f "$f.demo-bak" ]; then
+      mv "$f.demo-bak" "$f"
+      echo "  已还原: $f"
+    fi
   done
 }
 
 backup_local_build() {
+  # 先停止本地 PM2 服务，避免 .next 中的文件被占用导致无法备份/还原
+  if command -v pm2 &>/dev/null; then
+    pm2 stop "$SITE_NAME" >/dev/null 2>&1 || true
+  fi
+  # 等待文件句柄释放
+  sleep 1
+
   if [ -d "$SCRIPT_DIR/.next" ]; then
     echo ">>> 备份本地构建产物到 $LOCAL_BUILD_BACKUP_DIR ..."
     rm -rf "$LOCAL_BUILD_BACKUP_DIR"
@@ -106,9 +117,16 @@ restore_local_build() {
   if [ -n "${LOCAL_BUILD_BACKUP_DIR:-}" ] && [ -d "$LOCAL_BUILD_BACKUP_DIR" ]; then
     echo ""
     echo ">>> 还原本地构建产物..."
+    # 先停止本地 PM2 服务，确保 .next 可以被完整替换
+    if command -v pm2 &>/dev/null; then
+      pm2 stop "$SITE_NAME" >/dev/null 2>&1 || true
+    fi
+    sleep 1
+
     rm -rf "$SCRIPT_DIR/.next"
     cp -a "$LOCAL_BUILD_BACKUP_DIR" "$SCRIPT_DIR/.next"
     rm -rf "$LOCAL_BUILD_BACKUP_DIR"
+
     # 重启本地 PM2 服务
     if command -v pm2 &>/dev/null; then
       pm2 restart "$SITE_NAME" --update-env >/dev/null 2>&1 || true
@@ -162,30 +180,31 @@ if [ -d "$PUBLIC_DIR" ]; then
   rsync -a --delete --exclude="*.map" "$PUBLIC_DIR/" "$STANDALONE_DIR/public/"
 fi
 
-# 同时替换 data 目录中的 IP（如平台链接配置等），确保 standalone 产物中也生效
+echo ""
+echo "[4.5/5] 复制产物到打包目录..."
+rm -rf "$DEMO_PKG_DIR"
+rsync -a --delete --exclude="*.map" "$STANDALONE_DIR/" "$DEMO_PKG_DIR/"
+# 同时复制 data 目录中的配置（如平台链接等）
 if [ -d "$SCRIPT_DIR/data" ]; then
-  echo ">>> 替换 data 目录中的 IP..."
-  replace_ip "$OLD_IP" "$DEMO_HOST"
+  echo ">>> 复制 data 目录..."
+  rsync -a "$SCRIPT_DIR/data/" "$DEMO_PKG_DIR/data/"
 fi
 
 echo ""
 echo "[5/5] 上传并部署到演示服务器 $DEMO_HOST..."
 
-# 远程清扫
 $SSH_CMD $SSH_OPTS "$DEMO_USER@$DEMO_HOST" \
   "rm -rf $REMOTE_DIR && mkdir -p $REMOTE_DIR && chown $DEMO_USER:$DEMO_USER $REMOTE_DIR"
 
-# 同步产物
 rsync -az --delete \
   -e "$SSH_CMD $SSH_OPTS" \
   --timeout=300 \
   --exclude='*.map' \
   --exclude='*.log' \
   --exclude='logs/' \
-  "$STANDALONE_DIR/" \
+  "$DEMO_PKG_DIR/" \
   "$DEMO_USER@$DEMO_HOST:$REMOTE_DIR/"
 
-# 远程启动
 $SSH_CMD $SSH_OPTS "$DEMO_USER@$DEMO_HOST" \
   "export SITE_NAME='$SITE_NAME'; export PORT='$PORT'; export REMOTE_DIR='$REMOTE_DIR'; bash -s" << 'REMOTE_EOF'
   set -e
@@ -198,18 +217,15 @@ $SSH_CMD $SSH_OPTS "$DEMO_USER@$DEMO_HOST" \
     exit 1
   fi
 
-  # 自动安装 pm2（未安装时）
   if ! command -v pm2 &>/dev/null; then
     echo ">>> 远程安装 pm2..."
     "$NODE_BIN" "$(command -v npm || echo '/usr/local/bin/npm')" install -g pm2
   fi
 
-  # 彻底删除旧进程防止残留
   pm2 delete "$SITE_NAME" &>/dev/null || true
 
   cd "$REMOTE_DIR"
 
-  # 启动新进程
   PORT="$PORT" HOSTNAME="0.0.0.0" pm2 start server.js \
     --name "$SITE_NAME" \
     --interpreter "$NODE_BIN" \
@@ -218,7 +234,6 @@ $SSH_CMD $SSH_OPTS "$DEMO_USER@$DEMO_HOST" \
   pm2 save > /dev/null
 REMOTE_EOF
 
-# 尝试远程刷新后等待服务就绪
 $SSH_CMD $SSH_OPTS "$DEMO_USER@$DEMO_HOST" \
   "pm2 restart '$SITE_NAME' --update-env" >/dev/null 2>&1 || true
 
