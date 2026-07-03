@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { usePathname } from "next/navigation"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAnnotationEdit } from "@/lib/annotation-edit-context"
@@ -21,6 +22,10 @@ import { useState } from "react"
 const CONTENT_TRUNCATE_LENGTH = 120
 
 export function FloatingAnnotations() {
+  const pathname = usePathname()
+  const isLandingPage = pathname === "/landingpage" || pathname?.startsWith("/landingpage/")
+  if (isLandingPage) return null
+
   const ctx = useAnnotationEdit()
   const { floatingAnnotations, isEditMode, deleteFloatingAnnotation, annotationsVisible } = ctx
 

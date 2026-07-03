@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { usePathname } from "next/navigation"
 import { ChevronRight, X, HelpCircle, Pencil, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -55,6 +56,8 @@ export function PrdAnnotation({
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
+  const pathname = usePathname()
+  const isLandingPage = pathname === "/landingpage" || pathname?.startsWith("/landingpage/")
   const editCtx = useAnnotationEdit()
   const isEditMode = editCtx?.isEditMode ?? false
   const annotationsVisible = editCtx?.annotationsVisible ?? true
@@ -105,7 +108,7 @@ export function PrdAnnotation({
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <div className={cn("relative", className)}>
           {children}
-          {annotationsVisible && (
+          {annotationsVisible && !isLandingPage && (
           <PopoverTrigger asChild>
             <span
               role="button"

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { Pencil, X, Download, Plus, MousePointerClick, Eye, EyeOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,6 +19,10 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 export function AnnotationEditToolbar() {
+  const pathname = usePathname()
+  const isLandingPage = pathname === "/landingpage" || pathname?.startsWith("/landingpage/")
+  if (isLandingPage) return null
+
   const ctx = useAnnotationEdit()
   const { isEditMode, toggleEditMode, exportOverrides, activeAddForm, setActiveAddForm, pendingElement, setPendingElement, addFloatingAnnotation, annotationsVisible, toggleAnnotationsVisible } = ctx
 
