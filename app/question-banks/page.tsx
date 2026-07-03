@@ -433,7 +433,7 @@ export default function QuestionBanksPage() {
                   return (
                     <TableRow
                       key={bank.id}
-                      className={cn("cursor-pointer hover:bg-muted/50", isSelected && "bg-primary/5")}
+                      className={cn("group cursor-pointer hover:bg-muted/50", isSelected && "bg-primary/5")}
                       onClick={() => router.push(`/question-banks/${bank.id}`)}
                     >
                       <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
@@ -481,7 +481,7 @@ export default function QuestionBanksPage() {
                       <TableCell>
                         <span className="text-sm text-muted-foreground">{formatDate(bank.updatedAt)}</span>
                       </TableCell>
-                      <TableCell className="sticky right-0 bg-white text-right">
+                      <TableCell className="sticky right-0 bg-white text-right relative">
                         <BankStatusActions
                           status={bank.status}
                           onView={() => router.push(`/question-banks/${bank.id}`)}

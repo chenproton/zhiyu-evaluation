@@ -747,7 +747,7 @@ export default function ExamUsagePage() {
                 </TableRow>
               ) : (
                 filteredUsages.map((usage) => (
-                  <TableRow key={usage.id}>
+                  <TableRow key={usage.id} className="group">
                     <TableCell className="font-medium">{usage.examName}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -802,51 +802,43 @@ export default function ExamUsagePage() {
                       )}
                     </TableCell>
                     <TableCell>{getStatusBadge(usage.status)}</TableCell>
-                    <TableCell className="sticky right-0 bg-white text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="size-4" />
+                    <TableCell className="sticky right-0 bg-white text-right relative">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm z-10 px-2 py-1 rounded-lg shadow-sm border border-slate-100">
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={(e) => { e.stopPropagation(); openShareDialog(usage) }}>
+                          <Share2 className="mr-1 h-3 w-3" />
+                          分享考试
+                        </Button>
+                        {usage.status === 'ended' && (
+                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={(e) => { e.stopPropagation(); router.push(`/exam-usage/results?usageId=${usage.id}`) }}>
+                            <Eye className="mr-1 h-3 w-3" />
+                            查看考试结果
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => openShareDialog(usage)}>
-                            <Share2 className="size-4" />
-                            分享考试
-                          </DropdownMenuItem>
-                          {usage.status === 'ended' && (
-                            <DropdownMenuItem onClick={() => router.push(`/exam-usage/results?usageId=${usage.id}`)}>
-                              <Eye className="size-4" />
-                              查看考试结果
-                            </DropdownMenuItem>
-                          )}
-                          {usage.status === 'active' && (
-                            <DropdownMenuItem onClick={() => openEndDialog(usage.id)}>
-                              <XCircle className="size-4" />
-                              结束考试
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          {usage.displayType === '教学考试' && (
-                            <>
-                              {usage.approvalStatus === 'pending' && (
-                                <DropdownMenuItem onClick={() => openWithdrawDialog(usage.id)}>
-                                  <Undo2 className="size-4" />
-                                  撤回审批
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem onClick={() => alert('此处参考 1.0 版本页面功能即可')}>
-                                <Pencil className="size-4" />
-                                编辑
-                              </DropdownMenuItem>
-                              <DropdownMenuItem variant="destructive" onClick={() => alert('此处参考 1.0 版本页面功能即可')}>
-                                <Trash2 className="size-4" />
-                                删除
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                        )}
+                        {usage.status === 'active' && (
+                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700" onClick={(e) => { e.stopPropagation(); openEndDialog(usage.id) }}>
+                            <XCircle className="mr-1 h-3 w-3" />
+                            结束考试
+                          </Button>
+                        )}
+                        {usage.displayType === '教学考试' && usage.approvalStatus === 'pending' && (
+                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700" onClick={(e) => { e.stopPropagation(); openWithdrawDialog(usage.id) }}>
+                            <Undo2 className="mr-1 h-3 w-3" />
+                            撤回审批
+                          </Button>
+                        )}
+                        {usage.displayType === '教学考试' && (
+                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={(e) => { e.stopPropagation(); alert('此处参考 1.0 版本页面功能即可') }}>
+                            <Pencil className="mr-1 h-3 w-3" />
+                            编辑
+                          </Button>
+                        )}
+                        {usage.displayType === '教学考试' && (
+                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-red-500 hover:text-red-600" onClick={(e) => { e.stopPropagation(); alert('此处参考 1.0 版本页面功能即可') }}>
+                            <Trash2 className="mr-1 h-3 w-3" />
+                            删除
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

@@ -286,7 +286,7 @@ export default function ApprovalCenterPage() {
                 </TableRow>
               ) : (
                 filteredItems.map((item) => (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.id} className="group">
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {typeIcons[item.type]}
@@ -311,12 +311,12 @@ export default function ApprovalCenterPage() {
                         {item.remark || "-"}
                       </span>
                     </TableCell>
-                    <TableCell className="sticky right-0 bg-white text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    <TableCell className="sticky right-0 bg-white text-right relative">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm z-10 px-2 py-1 rounded-lg shadow-sm border border-slate-100">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 gap-1 text-xs text-blue-600"
+                          className="h-7 px-2 text-xs text-blue-600"
                           onClick={() => setDetailDialog({ open: true, item })}
                         >
                           <PrdAnnotation data={getAnnotation("ac-col-actions")}>
@@ -329,7 +329,7 @@ export default function ApprovalCenterPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-emerald-600 hover:text-emerald-600"
+                              className="h-7 px-2 text-xs text-emerald-600 hover:text-emerald-600"
                               onClick={() => {
                                 setApproveDialog({ open: true, item })
                                 setRemark("")
@@ -343,7 +343,7 @@ export default function ApprovalCenterPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-destructive hover:text-destructive"
+                              className="h-7 px-2 text-xs text-red-500 hover:text-red-600"
                               onClick={() => {
                                 setRejectDialog({ open: true, item })
                                 setRemark("")

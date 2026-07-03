@@ -2,1419 +2,592 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>学生画像 - 赵江威</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学生能力画像详情</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background: #f0f2f5;
-    color: #333;
-    font-size: 12px;
+:root{
+  --pri:#5b76e8;--pri2:#8c6ff0;--cyan:#39b3c8;
+  --grad:linear-gradient(135deg,#5b76e8,#8c6ff0);
+  --ink:#2b3550;--ink2:#5d6883;--ink3:#8a93ab;--ink4:#aab2c6;
+  --line:#edf0f7;--line2:#f4f6fb;
+  /* 三色阶 */
+  --exceed:#27b08a; --exceed2:#5fd3a8;        /* 超过基准 */
+  --meet:#5b76e8;   --meet2:#8c6ff0;          /* 达标 */
+  --below:#e89b3a;  --below2:#f3c069;          /* 未达标 */
+  --g-exceed:linear-gradient(90deg,#27b08a,#54cf9d);
+  --g-meet:linear-gradient(90deg,#5b76e8,#8c6ff0);
+  --g-below:linear-gradient(90deg,#e89b3a,#f3c069);
 }
-.container {
-    padding: 12px;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  background:transparent;
+  color:var(--ink);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  zoom:0.8;}
+.panel{background:#f7f9fd;overflow:hidden;}
 
-/* 主体网格 */
-.main-grid {
-    display: grid;
-    grid-template-columns: 240px 1fr 320px;
-    gap: 12px;
-}
 
-/* 卡片通用 */
-.card {
-    background: #fff;
-    border-radius: 6px;
-    padding: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-    margin-bottom: 12px;
-}
-.card:last-child { margin-bottom: 0; }
-.card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 10px;
-}
-.card-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #1f2937;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.card-title::before {
-    content: '';
-    width: 3px;
-    height: 12px;
-    background: #3b82f6;
-    border-radius: 2px;
-}
+.wrap{display:grid;grid-template-columns:352px 1fr 366px;gap:16px;padding:16px;}
+@media(max-width:1560px){.wrap{grid-template-columns:330px 1fr 340px;}}
+@media(max-width:1280px){.wrap{grid-template-columns:1fr;}}
 
-/* === 左侧 === */
-.student-card {
-    background: linear-gradient(160deg, #1e40af 0%, #3b82f6 60%, #60a5fa 100%);
-    border-radius: 6px;
-    padding: 14px;
-    color: #fff;
-    text-align: center;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.25);
-}
-.student-avatar {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    border: 2px solid rgba(255,255,255,0.5);
-    margin: 0 auto 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    backdrop-filter: blur(10px);
-}
-.student-name {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 2px;
-}
-.student-meta {
-    font-size: 11px;
-    opacity: 0.9;
-    margin-bottom: 10px;
-}
-.student-tags {
-    display: flex;
-    gap: 5px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-.s-tag {
-    background: rgba(255,255,255,0.25);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-    backdrop-filter: blur(10px);
-}
+.card{background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 2px 10px -6px rgba(40,52,90,.12);}
+.card + .card{margin-top:14px;}
+.chd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 11px;}
+.title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.title .mk{width:4px;height:14px;border-radius:3px;background:var(--grad);box-shadow:0 2px 5px rgba(91,118,232,.45);}
+.chd .ex{font-size:11px;color:var(--ink4);font-weight:600;}
+.cbd{padding:0 16px 16px;}
 
-.info-list .info-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 7px 0;
-    border-bottom: 1px dashed #f0f0f0;
-    font-size: 12px;
-}
-.info-list .info-row:last-child { border-bottom: none; }
-.info-row .label {
-    color: #6b7280;
-}
-.info-row .value {
-    color: #1f2937;
-    font-weight: 500;
-}
-.value-success { color: #10b981 !important; }
-.value-warning { color: #f59e0b !important; }
-.value-rank {
-    color: #ef4444 !important;
-    font-weight: 700 !important;
-}
+/* ===== LEFT ===== */
+.profile{position:relative;border-radius:15px;overflow:hidden;border:1px solid #dfe6fb;background:linear-gradient(130deg,#e9eeff,#eef1ff 50%,#f3edff);padding:20px 18px;}
+.profile .deco{position:absolute;right:-10px;bottom:-6px;opacity:.55;}
+.p-top{display:flex;align-items:center;gap:14px;position:relative;}
+.p-av{width:62px;height:62px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#5b76e8,#8c6ff0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:25px;font-weight:800;border:3px solid #fff;box-shadow:0 10px 22px -8px rgba(91,118,232,.6);}
+.p-name{font-size:18px;font-weight:800;display:flex;align-items:center;gap:7px;}
+.p-name .sx{font-size:13px;color:var(--pri);}
+.p-id{font-size:11.5px;color:var(--ink3);margin-top:4px;}
+.p-tags{display:flex;gap:7px;margin-top:14px;position:relative;}
+.ptag{font-size:11px;padding:4px 12px;border-radius:30px;font-weight:600;}
+.ptag.a{background:linear-gradient(135deg,#5b76e8,#7b91f2);color:#fff;box-shadow:0 5px 11px -4px rgba(91,118,232,.55);}
+.ptag.b{background:rgba(140,111,240,.13);color:var(--pri2);}
+.il .r{display:flex;justify-content:space-between;align-items:center;padding:9.5px 0;border-bottom:1px solid var(--line2);font-size:12.5px;}
+.il .r:last-child{border:none;}
+.il .k{color:var(--ink3);}
+.il .v{font-weight:600;}
+.pill{font-size:10.5px;padding:3px 10px;border-radius:20px;font-weight:600;}
+.pill.g{background:rgba(39,176,138,.13);color:var(--exceed);}
+.pill.a{background:rgba(232,155,58,.13);color:var(--below);}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.sc{padding:13px 4px;border-radius:12px;text-align:center;border:1px solid var(--line2);}
+.sc.b{background:linear-gradient(165deg,#eef2ff,#f6f8ff);}
+.sc.o{background:linear-gradient(165deg,#fff5e9,#fffaf2);}
+.sc .n{font-size:20px;font-weight:800;line-height:1;}
+.sc .l{font-size:10.5px;color:var(--ink3);margin-top:6px;}
+.sc.b .n{color:var(--pri);}
+.sc.o .n{color:var(--below);}
+.hg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;}
+.hn .ic{width:46px;height:46px;border-radius:50%;margin:0 auto 7px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;box-shadow:0 8px 15px -6px rgba(0,0,0,.25);}
+.hn .nm{font-size:10.5px;color:var(--ink2);font-weight:500;}
+.h1{background:linear-gradient(135deg,#27b08a,#5fd3a8);}
+.h2{background:linear-gradient(135deg,#e89b3a,#f3c069);}
+.h3{background:linear-gradient(135deg,#8c6ff0,#aa93f3);}
+.h4{background:linear-gradient(135deg,#e8748a,#f29aaa);}
 
-/* 学业概况方块 */
-.summary-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-.summary-box {
-    background: linear-gradient(135deg, #eff6ff, #dbeafe);
-    border-radius: 5px;
-    padding: 10px 8px;
-    text-align: center;
-    border: 1px solid #bfdbfe;
-}
-.summary-box .num {
-    font-size: 18px;
-    font-weight: 700;
-    color: #2563eb;
-    line-height: 1.2;
-}
-.summary-box .lbl {
-    font-size: 11px;
-    color: #6b7280;
-    margin-top: 2px;
-}
-.summary-box.green {
-    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-    border-color: #a7f3d0;
-}
-.summary-box.green .num { color: #059669; }
-.summary-box.orange {
-    background: linear-gradient(135deg, #fffbeb, #fef3c7);
-    border-color: #fcd34d;
-}
-.summary-box.orange .num { color: #d97706; }
-.summary-box.purple {
-    background: linear-gradient(135deg, #faf5ff, #ede9fe);
-    border-color: #c4b5fd;
-}
-.summary-box.purple .num { color: #7c3aed; }
+/* ===== CENTER ===== */
+.tabs{display:flex;gap:7px;padding:0 16px 12px;flex-wrap:wrap;}
+.tab{font-size:12.5px;padding:7px 16px;border-radius:9px;cursor:pointer;color:var(--ink2);background:#f4f6fb;font-weight:500;transition:.16s;border:1px solid transparent;}
+.tab:hover{color:var(--pri);}
+.tab.on{background:rgba(91,118,232,.1);color:var(--pri);font-weight:700;border-color:rgba(91,118,232,.28);}
 
-/* === 中间 === */
-.tab-bar {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #f0f0f0;
-}
-.tab-item {
-    padding: 6px 12px;
-    cursor: pointer;
-    font-size: 12px;
-    color: #6b7280;
-    position: relative;
-    font-weight: 500;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-.tab-item.active {
-    color: #2563eb;
-    font-weight: 600;
-}
-.tab-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #2563eb;
-}
+.hero{display:grid;grid-template-columns:0.92fr 1.08fr;gap:18px;padding:0 16px 6px;align-items:stretch;}
+.radar-box{position:relative;border-radius:15px;padding:14px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(120% 110% at 30% 10%,#eef2ff 0%,#f4f1ff 55%,#fbfcff 100%);border:1px solid #e7ebfb;}
+.radar-box::before{content:"";position:absolute;right:-50px;top:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(140,111,240,.16),transparent 70%);}
+.radar-wrap{position:relative;}
+.radar-center{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;}
+.radar-center .big{font-size:30px;font-weight:900;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.radar-center .sub{font-size:10.5px;color:var(--ink3);margin-top:3px;font-weight:600;letter-spacing:.5px;}
+.legend{display:flex;gap:16px;margin-top:2px;position:relative;}
+.legend span{font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:5px;font-weight:600;}
+.legend i{width:13px;height:5px;border-radius:3px;}
 
-/* 雷达 + 指标 + 能力画像 */
-.radar-ability-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-.radar-section {
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 14px;
-    align-items: center;
-}
-#radarChart { height: 240px; width: 100%; min-width: 0; }
+.right-stack{display:flex;flex-direction:column;gap:12px;}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.stat{position:relative;border-radius:13px;padding:15px 12px;overflow:hidden;border:1px solid;}
+.stat .v{font-size:25px;font-weight:900;line-height:1;}
+.stat .l{font-size:10.5px;color:var(--ink2);margin-top:7px;font-weight:500;}
+.stat .glow{position:absolute;right:-14px;top:-14px;width:56px;height:56px;border-radius:50%;opacity:.5;}
+.stat.s1{background:linear-gradient(160deg,#eafaf4,#f4fdf9);border-color:#cdeede;}
+.stat.s1 .v{color:var(--exceed);}.stat.s1 .glow{background:radial-gradient(circle,#7adcb6,transparent 70%);}
+.stat.s2{background:linear-gradient(160deg,#f3f0ff,#f9f7ff);border-color:#e2dbf8;}
+.stat.s2 .v{color:var(--pri2);}.stat.s2 .glow{background:radial-gradient(circle,#b6a3f5,transparent 70%);}
+.stat.s3{background:linear-gradient(160deg,#ecf0ff,#f6f8ff);border-color:#d4ddfb;}
+.stat.s3 .v{color:var(--pri);}.stat.s3 .glow{background:radial-gradient(circle,#9fb2f6,transparent 70%);}
+.stat.s4{background:linear-gradient(160deg,#fff4e6,#fffaf1);border-color:#f4e0c0;}
+.stat.s4 .v{color:var(--below);}.stat.s4 .glow{background:radial-gradient(circle,#f6cf8e,transparent 70%);}
 
-.score-overview {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-}
-.score-stat-item {
-    background: #fff;
-    border-radius: 8px;
-    padding: 14px 4px;
-    text-align: center;
-    border: 1px solid #e5e7eb;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 80px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.score-stat-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-}
-.score-stat-item .v {
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.2;
-}
-.score-stat-item .l {
-    font-size: 11px;
-    color: #6b7280;
-    margin-top: 4px;
-    font-weight: 500;
-}
-.score-stat-item.green { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-color: #bbf7d0; }
-.score-stat-item.green .v { color: #059669; }
-.score-stat-item.purple { background: linear-gradient(135deg, #faf5ff, #ede9fe); border-color: #c4b5fd; }
-.score-stat-item.purple .v { color: #7c3aed; }
-.score-stat-item.blue { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #bfdbfe; }
-.score-stat-item.blue .v { color: #2563eb; }
-.score-stat-item.amber { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-color: #fcd34d; }
-.score-stat-item.amber .v { color: #d97706; }
+.note{border-radius:13px;padding:14px 15px;background:linear-gradient(120deg,#f6f8ff,#f9f7ff);border:1px solid var(--line);flex:1;}
+.nt{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.nt .d{width:17px;height:17px;border-radius:6px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;}
+.note p{font-size:12px;color:var(--ink2);line-height:1.8;margin-top:8px;}
+.adv{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
+.adv .t{font-size:11px;padding:5px 12px;border-radius:8px;background:#fff;border:1px solid var(--line);color:var(--pri);font-weight:500;}
 
-/* 能力点表格 */
-.ability-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
-}
-.ability-table th {
-    background: #f9fafb;
-    padding: 8px 6px;
-    text-align: center;
-    color: #4b5563;
-    font-weight: 600;
-    border: 1px solid #e5e7eb;
-    font-size: 11px;
-}
-.ability-table td {
-    padding: 8px 6px;
-    text-align: center;
-    border: 1px solid #e5e7eb;
-    color: #374151;
-}
-.ability-table tr:hover td { background: #f9fafb; }
-.cat-cell {
-    background: #eff6ff !important;
-    color: #1e40af !important;
-    font-weight: 600;
-    font-size: 11px;
-}
-.score-pill {
-    display: inline-block;
-    padding: 1px 8px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 11px;
-}
-.s-high { background: #dbeafe; color: #1d4ed8; }
-.s-mid { background: #fef3c7; color: #b45309; }
-.lvl {
-    display: inline-block;
-    padding: 1px 6px;
-    border-radius: 10px;
-    font-size: 10px;
-}
-.lvl-shu { background: #fce7f3; color: #be185d; }
-.lvl-zhang { background: #e0e7ff; color: #4338ca; }
-.res-pass { color: #059669; font-weight: 600; }
-.res-fail { color: #dc2626; font-weight: 600; }
+/* ===== EVAL MATRIX ===== */
+.eval{margin:14px 16px 16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  --c1:124px;--c2:minmax(150px,1.25fr);--c3:104px;--c4:minmax(230px,1.55fr);--c5:118px;--c6:96px;}
+.eval-top{display:flex;align-items:center;gap:8px;padding:13px 16px;background:linear-gradient(120deg,#f4f7ff,#f7f4ff);border-bottom:1px solid var(--line);}
+.eval-top .mk{width:4px;height:14px;border-radius:3px;background:var(--grad);}
+.eval-top h3{font-size:13.5px;font-weight:700;}
+.lg{margin-left:auto;display:flex;gap:14px;font-size:10.5px;color:var(--ink2);font-weight:600;align-items:center;}
+.lg span{display:flex;align-items:center;gap:5px;}
+.lg i{width:16px;height:7px;border-radius:4px;display:inline-block;}
 
-/* === 右侧 === */
-.recommend-item {
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, #eff6ff, #f5f3ff);
-    border-left: 3px solid #3b82f6;
-}
-.recommend-item:last-child { margin-bottom: 0; }
-.rec-row1 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-}
-.rec-name {
-    font-size: 12px;
-    font-weight: 600;
-    color: #1f2937;
-}
-.match-tag {
-    background: linear-gradient(135deg, #3b82f6, #6366f1);
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 600;
-}
-.rec-progress {
-    height: 5px;
-    background: #e5e7eb;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 5px;
-}
-.rec-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #3b82f6, #6366f1);
-    border-radius: 3px;
-}
-.rec-detail {
-    font-size: 11px;
-    color: #6b7280;
-}
+.ev-head{display:grid;grid-template-columns:var(--c1) var(--c2) var(--c3) var(--c4) var(--c5) var(--c6);background:#f6f8fc;border-bottom:1px solid var(--line);}
+.ev-head>div{padding:10px 14px;font-size:11px;font-weight:700;color:var(--ink2);}
+.ev-head .c{text-align:center;}
 
-/* 课程列表 */
-.course-table {
-    width: 100%;
-    font-size: 11px;
-}
-.course-table th {
-    background: #f9fafb;
-    padding: 6px;
-    color: #4b5563;
-    font-weight: 600;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-}
-.course-table td {
-    padding: 7px 6px;
-    border-bottom: 1px solid #f0f0f0;
-    color: #1f2937;
-}
-.course-table tr:hover td { background: #f9fafb; }
-.score-num {
-    color: #2563eb;
-    font-weight: 700;
-}
-.grade-tag {
-    display: inline-block;
-    padding: 1px 6px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 500;
-    background: #dcfce7;
-    color: #15803d;
-}
+.ev-dom{display:grid;grid-template-columns:var(--c1) 1fr;border-bottom:1px solid var(--line2);}
+.ev-dom:last-child{border-bottom:none;}
+.ev-dname{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:14px;border-right:1px solid var(--line2);position:relative;}
+.ev-dname::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;}
+.ev-dom.d1 .ev-dname{background:linear-gradient(160deg,#f1f5ff,#fbfcff);}.ev-dom.d1 .ev-dname::before{background:linear-gradient(#5b76e8,#8c6ff0);}
+.ev-dom.d2 .ev-dname{background:linear-gradient(160deg,#f4f1ff,#fdfcff);}.ev-dom.d2 .ev-dname::before{background:linear-gradient(#8c6ff0,#a78cf3);}
+.ev-dom.d3 .ev-dname{background:linear-gradient(160deg,#edfaf5,#fbfefd);}.ev-dom.d3 .ev-dname::before{background:linear-gradient(#27b08a,#54cf9d);}
+.ev-dname .dn{font-size:12.5px;font-weight:800;}
+.ev-dname .davg{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--ink3);font-weight:600;}
+.ev-dname .davg b{font-size:15px;font-weight:900;}
+.ev-dom.d1 .davg b{color:var(--pri);}.ev-dom.d2 .davg b{color:var(--pri2);}.ev-dom.d3 .davg b{color:var(--exceed);}
 
-/* 荣誉 */
-.honor-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-}
-.honor-item {
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
-    border: 1px solid #fcd34d;
-    padding: 8px;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 11px;
-    color: #92400e;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.honor-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(252, 211, 77, 0.4);
-}
-.honor-item .icon {
-    font-size: 18px;
-    display: block;
-    margin-bottom: 2px;
-}
+.ev-rows{display:flex;flex-direction:column;}
+.ev-row{display:grid;grid-template-columns:var(--c2) var(--c3) var(--c4) var(--c5) var(--c6);align-items:center;border-bottom:1px solid var(--line2);transition:.15s;}
+.ev-row:last-child{border-bottom:none;}
+.ev-row:hover{background:#fafbff;}
+.ev-pt{padding:12px 14px;font-size:12px;color:var(--ink);font-weight:500;}
+.ev-score-c{display:flex;justify-content:center;}
+.ev-score{font-size:16px;font-weight:900;width:46px;text-align:center;}
+.ev-score.exceed{color:var(--exceed);}.ev-score.meet{color:var(--pri);}.ev-score.below{color:var(--below);}
 
-/* 能力认定 */
-.cert-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 10px;
-    background: #f9fafb;
-    border-radius: 5px;
-    margin-bottom: 6px;
-}
-.cert-row .name { font-weight: 500; color: #1f2937; font-size: 12px; }
-.cert-tag {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: #fff;
-    padding: 1px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 600;
-}
-.cert-grades {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-    margin-top: 6px;
-}
-.cert-grade-item {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 5px;
-    padding: 6px 2px;
-    text-align: center;
-}
-.cert-grade-item .l {
-    font-size: 10px;
-    color: #6b7280;
-    margin-bottom: 2px;
-}
+.ev-comp{padding:11px 18px 11px 8px;}
+.ev-bar{position:relative;height:22px;border-radius:7px;background:#eef1f8;overflow:visible;box-shadow:inset 0 1px 2px rgba(40,52,90,.06);}
+.ev-fill{position:absolute;left:0;top:0;height:100%;border-radius:7px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;
+  font-size:10px;font-weight:700;color:#fff;transition:width 1s cubic-bezier(.22,1,.36,1);box-shadow:0 2px 6px -1px rgba(40,52,90,.25);}
+.ev-fill.exceed{background:var(--g-exceed);}
+.ev-fill.meet{background:var(--g-meet);}
+.ev-fill.below{background:var(--g-below);}
+/* 旗帜（基准） */
+.bench{position:absolute;top:-12px;bottom:-12px;z-index:6;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;pointer-events:none;}
+.bench .line{flex:1;width:0;border-left:1.5px dashed #aab2c8;}
+.bench .flag{filter:drop-shadow(0 3px 4px rgba(40,52,90,.28));margin-bottom:-2px;}
+
+.req{display:flex;justify-content:center;}
+.lv{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;white-space:nowrap;}
+.lv .dot{width:6px;height:6px;border-radius:50%;}
+.lv.gray{background:#f0f2f8;color:var(--ink2);}
+.lv.gray .dot{background:#aab2c8;}
+
+.res{display:flex;justify-content:center;}
+.rs{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:8px;}
+.rs.pass{background:rgba(39,176,138,.12);color:var(--exceed);}
+.rs.passb{background:rgba(91,118,232,.12);color:var(--pri);}
+.rs.fail{background:rgba(232,155,58,.13);color:var(--below);}
+
+/* ===== RIGHT ===== */
+.rsub{font-size:11.5px;font-weight:700;color:var(--ink3);margin:2px 0 10px;}
+.rsub.mt{margin-top:16px;}
+.jc{border-radius:13px;padding:13px 14px;margin-bottom:10px;border:1px solid var(--line);background:#fff;transition:.18s;}
+.jc:hover{transform:translateY(-2px);box-shadow:0 12px 24px -14px rgba(91,118,232,.4);}
+.jc.acc{background:linear-gradient(120deg,#edfaf4,#f5fcf9);border-color:#cdeede;}
+.jc.acc2{background:linear-gradient(120deg,#f4f1ff,#f8f6ff);border-color:#e3ddf8;}
+.jtp{display:flex;justify-content:space-between;align-items:center;}
+.jn{font-size:13px;font-weight:700;}
+.mt2{font-size:10.5px;padding:3px 10px;border-radius:7px;color:#fff;font-weight:700;}
+.mt2.g{background:linear-gradient(120deg,#27b08a,#54cf9d);}
+.mt2.b{background:var(--grad);}
+.mt2.a{background:linear-gradient(120deg,#e89b3a,#f3c069);}
+.jbar{height:6px;border-radius:6px;background:#eceff6;margin:10px 0 8px;overflow:hidden;}
+.jbar i{display:block;height:100%;border-radius:6px;}
+.jbar i.g{background:linear-gradient(90deg,#27b08a,#54cf9d);}
+.jbar i.b{background:var(--grad);}
+.jdsc{font-size:11px;color:var(--ink3);}
+.jdsc b{font-weight:700;}
+.jpt{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
+.jpt .x{font-size:10px;padding:3px 10px;border-radius:7px;background:rgba(91,118,232,.08);color:var(--pri);font-weight:500;}
+.gt table{width:100%;border-collapse:separate;border-spacing:0;}
+.gt th,.gt td{padding:9px 7px;font-size:11px;}
+.gt thead th{background:#f5f7fc;color:var(--ink2);font-weight:700;text-align:left;}
+.gt thead th:first-child{border-radius:8px 0 0 8px;}
+.gt thead th:last-child{border-radius:0 8px 8px 0;}
+.gt tbody td{border-bottom:1px solid var(--line2);}
+.gt .gn{font-weight:500;color:var(--ink2);}
+.gt .gs{font-weight:800;color:var(--pri);}
+.gt .gl{font-size:10px;padding:2px 8px;border-radius:7px;background:rgba(39,176,138,.13);color:var(--exceed);font-weight:600;}
+.gt .gl.b{background:rgba(91,118,232,.1);color:var(--pri);}
+.gt .rk{color:var(--ink3);}
+.gt .at{color:var(--exceed);font-weight:600;}
+
+/* 毕业设计 */
+.gd-wrap{display:flex;gap:8px;justify-content:space-between;}
+.gd-item{flex:1;text-align:center;padding:12px 4px;border-radius:12px;border:1px solid var(--line2);background:#fff;transition:.18s;}
+.gd-item.on{background:linear-gradient(165deg,#eef2ff,#f6f8ff);border-color:#d4ddfb;box-shadow:0 3px 10px -5px rgba(91,118,232,.3);}
+.gd-grade{font-size:18px;font-weight:900;line-height:1.2;}
+.gd-item.on .gd-grade{color:var(--pri);}
+.gd-item:not(.on) .gd-grade{color:var(--ink3);}
+.gd-label{font-size:10px;color:var(--ink3);margin-top:5px;font-weight:500;}
+.gd-item.on .gd-label{color:var(--pri);font-weight:600;}
 </style>
 </head>
 <body>
-<div class="container">
-    <div class="main-grid">
-        <!-- 左侧：学生卡片、基础信息、学业概况、获得荣誉 -->
-        <div class="left-col">
-            <div class="student-card">
-                <div class="student-avatar">👨‍🎓</div>
-                <div class="student-name">赵江威</div>
-                <div class="student-meta">学号：25301 | 男</div>
-                <div class="student-tags">
-                    <span class="s-tag">物流学院</span>
-                    <span class="s-tag">智能物流</span>
-                </div>
-            </div>
+<div class="panel">
+  <div class="wrap">
 
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">基础信息</div>
-                </div>
-                <div class="info-list">
-                    <div class="info-row"><span class="label">所属院系</span><span class="value">物流学院</span></div>
-                    <div class="info-row"><span class="label">所属专业</span><span class="value">智能物流</span></div>
-                    <div class="info-row"><span class="label">所属班级</span><span class="value">25301班</span></div>
-                    <div class="info-row"><span class="label">所属年级</span><span class="value">2025级</span></div>
-                    <div class="info-row"><span class="label">专业排名</span><span class="value value-rank">第 3 名</span></div>
-                    <div class="info-row"><span class="label">违纪记录</span><span class="value value-success">无</span></div>
-                    <div class="info-row"><span class="label">体测情况</span><span class="value value-success">合格</span></div>
-                    <div class="info-row"><span class="label">党员身份</span><span class="value value-warning">预备党员</span></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">学业概况</div>
-                </div>
-                <div class="summary-grid">
-                    <div class="summary-box"><div class="num">54</div><div class="lbl">毕业学分</div></div>
-                    <div class="summary-box orange"><div class="num">4</div><div class="lbl">奖学金</div></div>
-                    <div class="summary-box green"><div class="num">12</div><div class="lbl">主修课程</div></div>
-                    <div class="summary-box purple"><div class="num">234</div><div class="lbl">知识点</div></div>
-                    <div class="summary-box"><div class="num">34</div><div class="lbl">实践场数</div></div>
-                    <div class="summary-box green"><div class="num">89</div><div class="lbl">实践任务</div></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">获得荣誉</div>
-                    <span style="font-size:11px;color:#6b7280;">4 项</span>
-                </div>
-                <div class="honor-list">
-                    <div class="honor-item"><span class="icon">🥇</span>国家奖学金</div>
-                    <div class="honor-item"><span class="icon">🏅</span>三好学生</div>
-                    <div class="honor-item"><span class="icon">⭐</span>优秀干部</div>
-                    <div class="honor-item"><span class="icon">🎖️</span>竞赛一等奖</div>
-                </div>
-            </div>
+    <!-- ===== LEFT ===== -->
+    <div>
+      <div class="profile">
+        <svg class="deco" width="150" height="110" viewBox="0 0 150 110"><g fill="#ffffff" opacity="0.55"><rect x="8" y="55" width="20" height="55" rx="2"/><rect x="34" y="35" width="22" height="75" rx="2"/><rect x="62" y="65" width="18" height="45" rx="2"/><rect x="86" y="25" width="24" height="85" rx="2"/><rect x="116" y="50" width="22" height="60" rx="2"/></g></svg>
+        <div class="p-top">
+          <div class="p-av">张</div>
+          <div><div class="p-name">张宇辰 <span class="sx">♂</span></div><div class="p-id">学号：2022123456</div></div>
         </div>
+        <div class="p-tags"><span class="ptag a">信息工程学院</span><span class="ptag b">软件技术</span></div>
+      </div>
 
-        <!-- 中间：目标岗位能力雷达 + 职业岗位能力画像（合并） -->
-        <div class="middle-col">
-            <div class="card" style="margin-bottom:0;">
-                <div class="card-header">
-                    <div class="card-title">🎯 目标岗位能力画像</div>
-                </div>
-                <div class="tab-bar">
-                    <div class="tab-item active" onclick="switchTab(this,'前端开发工程师')">前端开发工程师</div>
-                    <div class="tab-item" onclick="switchTab(this,'后端开发工程师')">后端开发工程师</div>
-                    <div class="tab-item" onclick="switchTab(this,'产品经理')">产品经理</div>
-                    <div class="tab-item" onclick="switchTab(this,'UI设计师')">UI设计师</div>
-                </div>
-
-                <div class="radar-ability-wrap">
-                    <!-- 雷达 + 四个指标 -->
-                    <div class="radar-section">
-                        <div id="radarChart"></div>
-                        <div class="score-overview">
-                            <div class="score-stat-item green">
-                                <div class="v" id="scorePct">86%</div>
-                                <div class="l">岗位能力达标率</div>
-                            </div>
-                            <div class="score-stat-item purple">
-                                <div class="v" id="competencyVal">32%</div>
-                                <div class="l">岗位胜任度</div>
-                            </div>
-                            <div class="score-stat-item blue">
-                                <div class="v" id="scoreVal">87</div>
-                                <div class="l">岗位能力认定得分</div>
-                            </div>
-                            <div class="score-stat-item amber">
-                                <div class="v" id="gradeLabel">A+</div>
-                                <div class="l">岗位能力认定毕业标准</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 能力画像表 -->
-                    <div class="ability-section">
-                        <table class="ability-table">
-                            <thead>
-                                <tr>
-                                    <th style="width:110px;">能力域</th>
-                                    <th>能力点</th>
-                                    <th style="width:120px;">岗位能力认定得分</th>
-                                    <th style="width:90px;">学生能力掌握度</th>
-                                    <th style="width:110px;">岗位所需掌握度</th>
-                                    <th style="width:80px;">认定结果</th>
-                                </tr>
-                            </thead>
-                            <tbody id="abilityBody">
-                                <tr>
-                                    <td class="cat-cell" rowspan="4">岗位与行业认知</td>
-                                    <td style="text-align:left;">前端技术发展趋势</td>
-                                    <td><span class="score-pill s-high">78</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">岗位职责与工作流程</td>
-                                    <td><span class="score-pill s-high">82</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">行业规范与标准</td>
-                                    <td><span class="score-pill s-mid">68</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-fail">✗ 不通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">用户体验设计原则</td>
-                                    <td><span class="score-pill s-high">75</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cat-cell" rowspan="4">专业技能</td>
-                                    <td style="text-align:left;">HTML5/CSS3 核心技术</td>
-                                    <td><span class="score-pill s-high">88</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">JavaScript/TypeScript 编程</td>
-                                    <td><span class="score-pill s-high">79</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">React/Vue 框架应用</td>
-                                    <td><span class="score-pill s-high">86</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">前端性能优化</td>
-                                    <td><span class="score-pill s-mid">64</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-fail">✗ 不通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cat-cell" rowspan="4">软技能</td>
-                                    <td style="text-align:left;">团队协作与沟通</td>
-                                    <td><span class="score-pill s-high">85</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">技术文档撰写</td>
-                                    <td><span class="score-pill s-high">72</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">问题分析与解决</td>
-                                    <td><span class="score-pill s-high">80</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">持续学习能力</td>
-                                    <td><span class="score-pill s-high">90</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cat-cell" rowspan="3">项目经验</td>
-                                    <td style="text-align:left;">完整项目开发经历</td>
-                                    <td><span class="score-pill s-high">82</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">需求评审与拆解</td>
-                                    <td><span class="score-pill s-high">76</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">版本控制与协作</td>
-                                    <td><span class="score-pill s-high">88</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cat-cell" rowspan="3">工具应用</td>
-                                    <td style="text-align:left;">VS Code 开发工具</td>
-                                    <td><span class="score-pill s-high">92</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">Git 版本管理</td>
-                                    <td><span class="score-pill s-high">85</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:left;">Chrome DevTools 调试</td>
-                                    <td><span class="score-pill s-high">78</span></td>
-                                    <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-                                    <td><span class="lvl lvl-shu">熟练 L5</span></td>
-                                    <td><span class="res-pass">✓ 通过</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+      <div class="card">
+        <div class="chd"><span class="title"><span class="mk"></span>基础信息</span></div>
+        <div class="cbd il">
+          <div class="r"><span class="k">所属院系</span><span class="v">信息工程学院</span></div>
+          <div class="r"><span class="k">所属专业</span><span class="v">软件技术</span></div>
+          <div class="r"><span class="k">所属班级</span><span class="v">25301班</span></div>
+          <div class="r"><span class="k">专业排名</span><span class="v" style="color:#e8748a">第 3 名</span></div>
+          <div class="r"><span class="k">违纪记录</span><span class="v">无</span></div>
+          <div class="r"><span class="k">体测情况</span><span class="v"><span class="pill g">合格</span></span></div>
+          <div class="r"><span class="k">党员身份</span><span class="v"><span class="pill a">预备党员</span></span></div>
         </div>
+      </div>
 
-        <!-- 右侧：推荐就业方向、课程成绩、毕业设计 -->
-        <div class="right-col">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">💼 推荐就业方向</div>
-                </div>
-                <!-- 推荐岗位 -->
-                <div style="margin-bottom:14px;">
-                    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">推荐岗位</div>
-                    <div class="recommend-item">
-                        <div class="rec-row1">
-                            <div class="rec-name">物流工程师</div>
-                            <div class="match-tag">匹配 70%</div>
-                        </div>
-                        <div class="rec-progress"><div class="rec-progress-bar" style="width:70%;"></div></div>
-                        <div class="rec-detail">优秀 · 适合智能物流方向核心岗位</div>
-                    </div>
-                    <div class="recommend-item" style="border-left-color:#8b5cf6;background:linear-gradient(135deg,#f5f3ff,#ede9fe);">
-                        <div class="rec-row1">
-                            <div class="rec-name">供应链分析师</div>
-                            <div class="match-tag" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">匹配 65%</div>
-                        </div>
-                        <div class="rec-progress"><div class="rec-progress-bar" style="width:65%;background:linear-gradient(90deg,#8b5cf6,#a78bfa);"></div></div>
-                        <div class="rec-detail">良好 · 数据分析能力突出</div>
-                    </div>
-                </div>
-                <!-- 推荐企业 -->
-                <div>
-                    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">推荐企业</div>
-                    <div class="recommend-item" style="border-left-color:#10b981;background:linear-gradient(135deg,#ecfdf5,#d1fae5);">
-                        <div class="rec-row1">
-                            <div class="rec-name">顺丰科技</div>
-                            <div class="match-tag" style="background:linear-gradient(135deg,#10b981,#34d399);">匹配 88%</div>
-                        </div>
-                        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                            <span style="background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:4px;font-size:10px;">物流工程师</span>
-                            <span style="background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:4px;font-size:10px;">供应链分析师</span>
-                        </div>
-                    </div>
-                    <div class="recommend-item" style="border-left-color:#f59e0b;background:linear-gradient(135deg,#fffbeb,#fef3c7);">
-                        <div class="rec-row1">
-                            <div class="rec-name">京东物流</div>
-                            <div class="match-tag" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">匹配 82%</div>
-                        </div>
-                        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                            <span style="background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;font-size:10px;">仓储管理师</span>
-                            <span style="background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;font-size:10px;">运输调度专员</span>
-                        </div>
-                    </div>
-                    <div class="recommend-item" style="border-left-color:#3b82f6;background:linear-gradient(135deg,#eff6ff,#dbeafe);">
-                        <div class="rec-row1">
-                            <div class="rec-name">菜鸟网络</div>
-                            <div class="match-tag">匹配 76%</div>
-                        </div>
-                        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                            <span style="background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px;font-size:10px;">数据分析师</span>
-                            <span style="background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px;font-size:10px;">物流工程师</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="card">
+        <div class="chd"><span class="title"><span class="mk"></span>学业概况</span></div>
+        <div class="cbd"><div class="sg">
+          <div class="sc b"><div class="n">54</div><div class="l">毕业学分</div></div>
+          <div class="sc b"><div class="n">4</div><div class="l">奖学金</div></div>
+          <div class="sc b"><div class="n">12</div><div class="l">主修课程</div></div>
+          <div class="sc o"><div class="n">234</div><div class="l">知识点</div></div>
+          <div class="sc o"><div class="n">89</div><div class="l">实践任务</div></div>
+          <div class="sc o"><div class="n">34</div><div class="l">实践场次</div></div>
+        </div></div>
+      </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">📚 课程成绩</div>
-                </div>
-                <table class="course-table">
-                    <thead>
-                        <tr>
-                            <th>课程名称</th>
-                            <th style="width:50px;text-align:center;">分数</th>
-                            <th style="width:50px;text-align:center;">等级</th>
-                            <th style="width:60px;text-align:center;">班级排名</th>
-                            <th style="width:60px;text-align:center;">到课率</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>物流系统工程</td><td style="text-align:center;"><span class="score-num">93</span></td><td style="text-align:center;"><span class="grade-tag">优秀</span></td><td style="text-align:center;">3/45</td><td style="text-align:center;">98%</td></tr>
-                        <tr><td>供应链管理</td><td style="text-align:center;"><span class="score-num">91</span></td><td style="text-align:center;"><span class="grade-tag">优秀</span></td><td style="text-align:center;">5/45</td><td style="text-align:center;">98%</td></tr>
-                        <tr><td>运输与配送</td><td style="text-align:center;"><span class="score-num">95</span></td><td style="text-align:center;"><span class="grade-tag">优秀</span></td><td style="text-align:center;">1/45</td><td style="text-align:center;">98%</td></tr>
-                        <tr><td>仓储管理</td><td style="text-align:center;"><span class="score-num">90</span></td><td style="text-align:center;"><span class="grade-tag">优秀</span></td><td style="text-align:center;">6/45</td><td style="text-align:center;">98%</td></tr>
-                        <tr><td>数据分析</td><td style="text-align:center;"><span class="score-num">93</span></td><td style="text-align:center;"><span class="grade-tag">优秀</span></td><td style="text-align:center;">2/45</td><td style="text-align:center;">98%</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">🎓 毕业设计</div>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:8px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f9fafb;border-radius:5px;">
-                        <span style="font-weight:500;color:#1f2937;font-size:12px;">基于物联网的智能仓储管理系统设计</span>
-                        <span style="background:#dcfce7;color:#15803d;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600;">已通过</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f9fafb;border-radius:5px;">
-                        <span style="font-weight:500;color:#1f2937;font-size:12px;">供应链风险预警模型构建与实现</span>
-                        <span style="background:#fef3c7;color:#b45309;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600;">评审中</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div class="card">
+        <div class="chd"><span class="title"><span class="mk"></span>获得荣誉</span><span class="ex">4 项</span></div>
+        <div class="cbd"><div class="hg">
+          <div class="hn"><div class="ic h1">★</div><div class="nm">国家奖学金</div></div>
+          <div class="hn"><div class="ic h2">优</div><div class="nm">三好学生</div></div>
+          <div class="hn"><div class="ic h3">干</div><div class="nm">优秀干部</div></div>
+          <div class="hn"><div class="ic h4">奖</div><div class="nm">竞赛一等奖</div></div>
+        </div></div>
+      </div>
     </div>
+
+    <!-- ===== CENTER ===== -->
+    <div>
+      <div class="card">
+        <div class="chd"><span class="title"><span class="mk"></span>目标岗位能力画像</span><span class="ex">更新于 2025-02</span></div>
+        <div class="tabs">
+          <span class="tab on">前端开发工程师</span><span class="tab">后端开发工程师</span>
+          <span class="tab">产品经理</span><span class="tab">UI 设计师</span>
+        </div>
+
+        <!-- HERO -->
+        <div class="hero">
+          <div class="radar-box">
+            <div class="radar-wrap">
+              <svg id="radar" width="318" height="290" viewBox="0 0 340 320"></svg>
+              <div class="radar-center"><div class="big">86%</div><div class="sub">综合达成率</div></div>
+            </div>
+            <div class="legend">
+              <span><i style="background:linear-gradient(90deg,#5b76e8,#8c6ff0)"></i>学生能力</span>
+              <span><i style="background:#c4cad9"></i>岗位要求</span>
+            </div>
+          </div>
+          <div class="right-stack">
+            <div class="stat-row">
+              <div class="stat s1"><span class="glow"></span><div class="v">86%</div><div class="l">岗位能力达成率</div></div>
+              <div class="stat s2"><span class="glow"></span><div class="v">82%</div><div class="l">岗位胜任度</div></div>
+              <div class="stat s3"><span class="glow"></span><div class="v">87</div><div class="l">能力认知得分</div></div>
+              <div class="stat s4"><span class="glow"></span><div class="v">A+</div><div class="l">认知专业等级</div></div>
+            </div>
+            <div class="note">
+              <div class="nt"><span class="d">i</span>能力说明</div>
+              <p>张宇辰在 <b style="color:var(--pri)">前端开发工程师</b> 岗位综合达成率 <b style="color:var(--exceed)">86%</b>，<b style="color:var(--pri2)">专业技能</b> 与 <b style="color:var(--cyan)">工具应用</b> 显著超过岗位基准；<b style="color:var(--below)">行业规范、性能优化、持续学习</b> 三项尚未达标，建议参与实战项目补强。</p>
+              <div class="nt" style="margin-top:11px;"><span class="d">↑</span>能力提升建议</div>
+              <div class="adv"><span class="t">加强项目实践</span><span class="t">提升工程化能力</span><span class="t">深入框架原理</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EVAL MATRIX -->
+        <div class="eval">
+          <div class="eval-top">
+            <span class="mk"></span><h3>能力域达成分析</h3>
+            <div class="lg">
+              <span><i style="background:var(--g-exceed)"></i>超过基准</span>
+              <span><i style="background:var(--g-meet)"></i>达标</span>
+              <span><i style="background:var(--g-below)"></i>未达标</span>
+              <span style="gap:3px"><svg width="13" height="14" viewBox="0 0 13 14"><line x1="1.5" y1="2" x2="1.5" y2="13" stroke="#aab2c8" stroke-width="1.4" stroke-dasharray="2 2"/><path d="M2.4 2 L11 3.6 L8.6 5.3 L11 7 L2.4 8.6 Z" fill="#94a0be"/></svg>岗位基准</span>
+            </div>
+          </div>
+
+          <div class="ev-head">
+            <div>能力领域</div>
+            <div>能力点</div>
+            <div class="c">认定得分</div>
+            <div>学生能力掌握度（对比岗位基准）</div>
+            <div class="c">岗位所需</div>
+            <div class="c">认定结果</div>
+          </div>
+
+          <!-- 数据由 JS 渲染 -->
+          <div id="evalBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT ===== -->
+    <div>
+      <div class="card">
+        <div class="chd"><span class="title"><span class="mk"></span>推荐就业方向</span></div>
+        <div class="cbd">
+          <div class="rsub">推荐岗位</div>
+          <div class="jc acc"><div class="jtp"><span class="jn">前端开发工程师</span><span class="mt2 g">匹配 88%</span></div><div class="jbar"><i class="g" style="width:88%"></i></div><div class="jdsc"><b style="color:var(--exceed)">优秀</b> · 适合 Web 应用开发核心岗位</div></div>
+          <div class="jc acc2"><div class="jtp"><span class="jn">Web 全栈工程师</span><span class="mt2 b">匹配 76%</span></div><div class="jbar"><i class="b" style="width:76%"></i></div><div class="jdsc"><b style="color:var(--pri2)">良好</b> · 工程化与数据处理能力突出</div></div>
+          <div class="rsub mt">推荐企业</div>
+          <div class="jc acc"><div class="jtp"><span class="jn">字节跳动</span><span class="mt2 g">匹配 88%</span></div><div class="jpt"><span class="x">前端开发</span><span class="x">全栈开发</span></div></div>
+          <div class="jc"><div class="jtp"><span class="jn">腾讯科技</span><span class="mt2 a">匹配 82%</span></div><div class="jpt"><span class="x">前端开发</span><span class="x">小程序开发</span></div></div>
+          <div class="jc"><div class="jtp"><span class="jn">阿里巴巴</span><span class="mt2 b">匹配 76%</span></div><div class="jpt"><span class="x">前端开发</span><span class="x">Node 开发</span></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chd"><span class="title"><span class="mk"></span>课程成绩</span></div>
+        <div class="cbd gt">
+          <table>
+            <thead><tr><th>课程名称</th><th>分数</th><th>等级</th><th>排名</th><th>到课率</th></tr></thead>
+            <tbody>
+              <tr><td class="gn">Web 前端开发</td><td class="gs">93</td><td><span class="gl">优秀</span></td><td class="rk">2/45</td><td class="at">98%</td></tr>
+              <tr><td class="gn">JavaScript 程序设计</td><td class="gs">91</td><td><span class="gl">优秀</span></td><td class="rk">3/45</td><td class="at">97%</td></tr>
+              <tr><td class="gn">数据结构与算法</td><td class="gs">86</td><td><span class="gl">优秀</span></td><td class="rk">5/45</td><td class="at">96%</td></tr>
+              <tr><td class="gn">计算机网络</td><td class="gs">88</td><td><span class="gl">优秀</span></td><td class="rk">4/45</td><td class="at">99%</td></tr>
+              <tr><td class="gn">数据库原理</td><td class="gs">84</td><td><span class="gl b">良好</span></td><td class="rk">6/45</td><td class="at">95%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chd"><span class="title"><span class="mk"></span>🎓 毕业设计</span></div>
+        <div class="cbd">
+          <div class="gd-wrap">
+            <div class="gd-item on">
+              <div class="gd-grade">A+</div>
+              <div class="gd-label">优秀</div>
+            </div>
+            <div class="gd-item">
+              <div class="gd-grade">A</div>
+              <div class="gd-label">优良</div>
+            </div>
+            <div class="gd-item">
+              <div class="gd-grade">B+</div>
+              <div class="gd-label">良好</div>
+            </div>
+            <div class="gd-item">
+              <div class="gd-grade">B</div>
+              <div class="gd-label">中等</div>
+            </div>
+            <div class="gd-item">
+              <div class="gd-grade">C</div>
+              <div class="gd-label">及格</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<script src="/echarts.min.js"></script>
 <script>
-let radarChart = null;
-if (typeof echarts !== 'undefined' && document.getElementById('radarChart')) {
-    radarChart = echarts.init(document.getElementById('radarChart'));
+const NS='http://www.w3.org/2000/svg';
+const COLOR={exceed:'#27b08a',meet:'#5b76e8',below:'#e89b3a'};
+const resMap={exceed:['pass','✓ 通过'],meet:['passb','✓ 通过'],below:['fail','✗ 不通过']};
+const axes=['岗位认知','工具应用','项目经验','软技能','专业技能'];
+const cx=170,cy=160,R=98,N=axes.length;
+
+function flagSVG(c){return `<svg class="flag" width="17" height="15" viewBox="0 0 17 15"><path d="M2.2 0.5 L14.5 3 L11.6 5 L14.5 7 L2.2 9.5 Z" fill="${c}"/></svg>`;}
+
+/* ---------- 各岗位数据 ---------- */
+const positionData={
+  '前端开发工程师':{
+    stu:[0.78,0.86,0.62,0.82,0.90],need:[0.85,0.80,0.75,0.82,0.88],
+    center:'86%',stats:['86%','82%','87','A+'],
+    desc:'张宇辰在 <b style="color:var(--pri)">前端开发工程师</b> 岗位综合达成率 <b style="color:var(--exceed)">86%</b>，<b style="color:var(--pri2)">专业技能</b> 与 <b style="color:var(--cyan)">工具应用</b> 显著超过岗位基准；<b style="color:var(--below)">行业规范、性能优化、持续学习</b> 三项尚未达标，建议参与实战项目补强。',
+    tags:['加强项目实践','提升工程化能力','深入框架原理'],
+    domains:[
+      {cls:'d1',name:'岗位与行业认知',avg:78,rows:[
+        {pt:'行业发展趋势',score:85,bench:72,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'岗位职责流程',score:82,bench:80,stu:'熟练 L5',req:'熟练 L5',st:'meet'},
+        {pt:'行业规范标准',score:68,bench:84,stu:'熟悉 L3',req:'熟练 L5',st:'below'},
+      ]},
+      {cls:'d2',name:'专业技能',avg:78,rows:[
+        {pt:'HTML5/CSS3 核心',score:90,bench:74,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'JS/TS 工程开发',score:80,bench:78,stu:'掌握 L4',req:'掌握 L4',st:'meet'},
+        {pt:'前端性能优化',score:64,bench:82,stu:'熟悉 L3',req:'熟练 L5',st:'below'},
+      ]},
+      {cls:'d3',name:'软技能',avg:78,rows:[
+        {pt:'团队协作沟通',score:88,bench:72,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'问题分析解决',score:82,bench:79,stu:'掌握 L4',req:'掌握 L4',st:'meet'},
+        {pt:'持续学习能力',score:62,bench:80,stu:'熟悉 L3',req:'熟练 L5',st:'below'},
+      ]},
+    ]
+  },
+  '后端开发工程师':{
+    stu:[0.72,0.74,0.68,0.78,0.82],need:[0.80,0.82,0.78,0.80,0.85],
+    center:'78%',stats:['78%','74%','82','B+'],
+    desc:'张宇辰在 <b style="color:var(--pri)">后端开发工程师</b> 岗位综合达成率 <b style="color:var(--exceed)">78%</b>，<b style="color:var(--pri2)">Java/Go 开发</b> 与 <b style="color:var(--cyan)">数据库设计</b> 表现良好；<b style="color:var(--below)">分布式系统、微服务架构、性能调优</b> 三项未达标，建议加强后端架构实践。',
+    tags:['学习分布式系统','深入微服务架构','多参与高并发项目'],
+    domains:[
+      {cls:'d1',name:'岗位与行业认知',avg:72,rows:[
+        {pt:'后端架构发展趋势',score:72,bench:78,stu:'掌握 L4',req:'熟练 L5',st:'below'},
+        {pt:'分布式系统原理',score:62,bench:82,stu:'熟悉 L3',req:'熟练 L5',st:'below'},
+        {pt:'岗位职责认知',score:82,bench:76,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+      ]},
+      {cls:'d2',name:'专业技能',avg:76,rows:[
+        {pt:'Java/Go 语言开发',score:85,bench:78,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'数据库设计与优化',score:80,bench:82,stu:'掌握 L4',req:'熟练 L5',st:'meet'},
+        {pt:'微服务架构设计',score:64,bench:80,stu:'熟悉 L3',req:'熟练 L5',st:'below'},
+      ]},
+      {cls:'d3',name:'软技能',avg:76,rows:[
+        {pt:'系统分析与设计',score:82,bench:78,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'跨团队协作',score:70,bench:76,stu:'掌握 L4',req:'掌握 L4',st:'meet'},
+        {pt:'代码审查能力',score:74,bench:80,stu:'掌握 L4',req:'熟练 L5',st:'meet'},
+      ]},
+    ]
+  },
+  '产品经理':{
+    stu:[0.85,0.62,0.82,0.75,0.78],need:[0.82,0.70,0.85,0.78,0.80],
+    center:'76%',stats:['76%','80%','78','A'],
+    desc:'张宇辰在 <b style="color:var(--pri)">产品经理</b> 岗位综合达成率 <b style="color:var(--exceed)">76%</b>，<b style="color:var(--pri2)">需求分析</b> 与 <b style="color:var(--cyan)">用户调研</b> 能力突出；<b style="color:var(--below)">原型设计、商业模式理解、数据分析深度</b> 尚未达标，建议加强产品设计工具使用。',
+    tags:['提升原型设计能力','学习商业模式分析','强化数据驱动思维'],
+    domains:[
+      {cls:'d1',name:'岗位与行业认知',avg:82,rows:[
+        {pt:'互联网产品趋势',score:90,bench:80,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'竞品分析方法',score:82,bench:78,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'商业模式理解',score:65,bench:82,stu:'熟悉 L3',req:'熟练 L5',st:'below'},
+      ]},
+      {cls:'d2',name:'专业技能',avg:72,rows:[
+        {pt:'需求分析与挖掘',score:92,bench:82,stu:'熟练 L5',req:'熟练 L5',st:'exceed'},
+        {pt:'原型设计与交互',score:62,bench:78,stu:'熟悉 L3',req:'掌握 L4',st:'below'},
+        {pt:'数据分析与决策',score:68,bench:80,stu:'掌握 L4',req:'熟练 L5',st:'below'},
+      ]},
+      {cls:'d3',name:'软技能',avg:84,rows:[
+        {pt:'跨部门沟通协调',score:92,bench:82,stu:'熟练 L5',req:'熟练 L5',st:'exceed'},
+        {pt:'用户访谈与调研',score:85,bench:76,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'演讲与汇报能力',score:78,bench:74,stu:'掌握 L4',req:'掌握 L4',st:'meet'},
+      ]},
+    ]
+  },
+  'UI 设计师':{
+    stu:[0.80,0.82,0.72,0.78,0.86],need:[0.78,0.85,0.76,0.80,0.84],
+    center:'80%',stats:['80%','78%','84','A'],
+    desc:'张宇辰在 <b style="color:var(--pri)">UI 设计师</b> 岗位综合达成率 <b style="color:var(--exceed)">80%</b>，<b style="color:var(--pri2)">视觉设计</b> 与 <b style="color:var(--cyan)">Figma 工具应用</b> 表现优秀；<b style="color:var(--below)">交互设计原理、设计系统思维、动效设计</b> 三项未达标，建议系统学习交互设计理论。',
+    tags:['学习交互设计原理','构建设计系统思维','掌握动效设计工具'],
+    domains:[
+      {cls:'d1',name:'岗位与行业认知',avg:78,rows:[
+        {pt:'设计趋势洞察',score:88,bench:76,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'UI/UX 设计规范',score:85,bench:80,stu:'熟练 L5',req:'熟练 L5',st:'meet'},
+        {pt:'设计系统思维',score:65,bench:82,stu:'熟悉 L3',req:'熟练 L5',st:'below'},
+      ]},
+      {cls:'d2',name:'专业技能',avg:78,rows:[
+        {pt:'Figma/Sketch 设计',score:90,bench:82,stu:'熟练 L5',req:'熟练 L5',st:'exceed'},
+        {pt:'视觉设计规范',score:88,bench:80,stu:'熟练 L5',req:'掌握 L4',st:'exceed'},
+        {pt:'交互设计原理',score:62,bench:78,stu:'熟悉 L3',req:'掌握 L4',st:'below'},
+      ]},
+      {cls:'d3',name:'软技能',avg:80,rows:[
+        {pt:'审美与创意表达',score:92,bench:82,stu:'熟练 L5',req:'熟练 L5',st:'exceed'},
+        {pt:'设计提案表达',score:78,bench:74,stu:'掌握 L4',req:'掌握 L4',st:'meet'},
+        {pt:'设计反馈处理',score:72,bench:76,stu:'掌握 L4',req:'掌握 L4',st:'meet'},
+      ]},
+    ]
+  }
+};
+
+/* ---------- 渲染函数 ---------- */
+function renderRadar(stu,need){
+  const svg=document.getElementById('radar');
+  svg.innerHTML='';
+  const defs=document.createElementNS(NS,'defs');
+  defs.innerHTML=`<linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b76e8"/><stop offset="1" stop-color="#8c6ff0"/></linearGradient>`;
+  svg.appendChild(defs);
+  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/N;return[cx+R*r*Math.cos(a),cy+R*r*Math.sin(a)];};
+  const poly=(pts,fill,stroke,sw,op,dash)=>{const p=document.createElementNS(NS,'polygon');
+    p.setAttribute('points',pts.map(d=>d.join(',')).join(' '));p.setAttribute('fill',fill);
+    p.setAttribute('stroke',stroke);p.setAttribute('stroke-width',sw);if(op!=null)p.setAttribute('fill-opacity',op);
+    if(dash)p.setAttribute('stroke-dasharray',dash);svg.appendChild(p);};
+  [0.25,0.5,0.75,1].forEach(l=>poly([...Array(N)].map((_,i)=>pt(i,l)),'none','#e6e9f4',1));
+  for(let i=0;i<N;i++){const[x,y]=pt(i,1);const ln=document.createElementNS(NS,'line');
+    ln.setAttribute('x1',cx);ln.setAttribute('y1',cy);ln.setAttribute('x2',x);ln.setAttribute('y2',y);ln.setAttribute('stroke','#e6e9f4');svg.appendChild(ln);}
+  poly(need.map((v,i)=>pt(i,v)),'rgba(170,178,200,.1)','#c4cad9',1.5,null,'4 4');
+  poly(stu.map((v,i)=>pt(i,v)),'url(#rg)','#5b76e8',2.2,0.26);
+  stu.forEach((v,i)=>{const[x,y]=pt(i,v);const c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',3.4);c.setAttribute('fill','#fff');
+    c.setAttribute('stroke','#5b76e8');c.setAttribute('stroke-width',2);svg.appendChild(c);});
+  axes.forEach((t,i)=>{const[x,y]=pt(i,1.25);const tx=document.createElementNS(NS,'text');
+    tx.setAttribute('x',x);tx.setAttribute('y',y+4);tx.setAttribute('font-size','12');tx.setAttribute('font-weight','600');
+    tx.setAttribute('fill','#5d6883');let anc='middle';if(x<cx-8)anc='end';if(x>cx+8)anc='start';
+    tx.setAttribute('text-anchor',anc);tx.textContent=t;svg.appendChild(tx);});
 }
 
-const dataMap = {
-    '前端开发工程师': [70, 86, 85, 78, 82],
-    '后端开发工程师': [75, 78, 80, 72, 76],
-    '产品经理': [82, 65, 90, 80, 70],
-    'UI设计师': [68, 72, 78, 85, 88]
-};
-
-const scoreMap = {
-    '前端开发工程师': { pct: '89%', competency: '32%', score: '87', grade: 'A+' },
-    '后端开发工程师': { pct: '78%', competency: '18%', score: '76', grade: 'B+' },
-    '产品经理': { pct: '83%', competency: '45%', score: '82', grade: 'A' },
-    'UI设计师': { pct: '83%', competency: '28%', score: '80', grade: 'A' }
-};
-
-const abilityMap = {
-    '前端开发工程师': `
-        <tr>
-            <td class="cat-cell" rowspan="4">岗位与行业认知</td>
-            <td style="text-align:left;">前端技术发展趋势</td>
-            <td><span class="score-pill s-high">78</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">岗位职责与工作流程</td>
-            <td><span class="score-pill s-high">82</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">行业规范与标准</td>
-            <td><span class="score-pill s-mid">68</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">用户体验设计原则</td>
-            <td><span class="score-pill s-high">75</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="4">专业技能</td>
-            <td style="text-align:left;">HTML5/CSS3 核心技术</td>
-            <td><span class="score-pill s-high">88</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">JavaScript/TypeScript 编程</td>
-            <td><span class="score-pill s-high">79</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">React/Vue 框架应用</td>
-            <td><span class="score-pill s-high">86</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">前端性能优化</td>
-            <td><span class="score-pill s-mid">64</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="4">软技能</td>
-            <td style="text-align:left;">团队协作与沟通</td>
-            <td><span class="score-pill s-high">85</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">技术文档撰写</td>
-            <td><span class="score-pill s-high">72</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">问题分析与解决</td>
-            <td><span class="score-pill s-high">80</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">持续学习能力</td>
-            <td><span class="score-pill s-high">90</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="3">项目经验</td>
-            <td style="text-align:left;">完整项目开发经历</td>
-            <td><span class="score-pill s-high">82</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">需求评审与拆解</td>
-            <td><span class="score-pill s-high">76</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">版本控制与协作</td>
-            <td><span class="score-pill s-high">88</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="3">工具应用</td>
-            <td style="text-align:left;">VS Code 开发工具</td>
-            <td><span class="score-pill s-high">92</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">Git 版本管理</td>
-            <td><span class="score-pill s-high">85</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">Chrome DevTools 调试</td>
-            <td><span class="score-pill s-high">78</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-    `,
-    '后端开发工程师': `
-        <tr>
-            <td class="cat-cell" rowspan="4">岗位与行业认知</td>
-            <td style="text-align:left;">后端架构发展趋势</td>
-            <td><span class="score-pill s-high">72</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">分布式系统原理</td>
-            <td><span class="score-pill s-mid">62</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">岗位职责认知</td>
-            <td><span class="score-pill s-high">78</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">云原生技术认知</td>
-            <td><span class="score-pill s-mid">58</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="4">专业技能</td>
-            <td style="text-align:left;">Java/Go 语言开发</td>
-            <td><span class="score-pill s-high">85</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">数据库设计与优化</td>
-            <td><span class="score-pill s-high">80</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">微服务架构设计</td>
-            <td><span class="score-pill s-mid">64</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">API 接口开发</td>
-            <td><span class="score-pill s-high">88</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="4">软技能</td>
-            <td style="text-align:left;">系统分析与设计</td>
-            <td><span class="score-pill s-high">82</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">接口文档编写</td>
-            <td><span class="score-pill s-high">76</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">跨团队协作</td>
-            <td><span class="score-pill s-high">70</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">代码审查能力</td>
-            <td><span class="score-pill s-high">74</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="3">项目经验</td>
-            <td style="text-align:left;">高并发项目经验</td>
-            <td><span class="score-pill s-mid">66</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">系统架构设计</td>
-            <td><span class="score-pill s-high">72</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">性能调优实践</td>
-            <td><span class="score-pill s-high">78</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="3">工具应用</td>
-            <td style="text-align:left;">Docker 容器化</td>
-            <td><span class="score-pill s-high">80</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">Linux 系统运维</td>
-            <td><span class="score-pill s-high">75</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">监控与日志工具</td>
-            <td><span class="score-pill s-mid">60</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-    `,
-    '产品经理': `
-        <tr>
-            <td class="cat-cell" rowspan="4">岗位与行业认知</td>
-            <td style="text-align:left;">互联网产品趋势</td>
-            <td><span class="score-pill s-high">90</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">竞品分析方法</td>
-            <td><span class="score-pill s-high">82</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">产品经理职责认知</td>
-            <td><span class="score-pill s-high">88</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">商业模式理解</td>
-            <td><span class="score-pill s-mid">65</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="4">专业技能</td>
-            <td style="text-align:left;">需求分析与挖掘</td>
-            <td><span class="score-pill s-high">92</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">原型设计与交互</td>
-            <td><span class="score-pill s-mid">62</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">数据分析与决策</td>
-            <td><span class="score-pill s-high">80</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">产品规划与路线图</td>
-            <td><span class="score-pill s-high">85</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="4">软技能</td>
-            <td style="text-align:left;">跨部门沟通协调</td>
-            <td><span class="score-pill s-high">92</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">用户访谈与调研</td>
-            <td><span class="score-pill s-high">78</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">项目推进与管理</td>
-            <td><span class="score-pill s-high">75</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">演讲与汇报能力</td>
-            <td><span class="score-pill s-high">88</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="3">项目经验</td>
-            <td style="text-align:left;">0-1 产品落地经验</td>
-            <td><span class="score-pill s-high">82</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">产品迭代优化</td>
-            <td><span class="score-pill s-high">86</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">上线运营配合</td>
-            <td><span class="score-pill s-mid">68</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="3">工具应用</td>
-            <td style="text-align:left;">Axure/Figma 原型</td>
-            <td><span class="score-pill s-high">80</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">数据分析平台</td>
-            <td><span class="score-pill s-high">76</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">项目管理工具</td>
-            <td><span class="score-pill s-high">85</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-    `,
-    'UI设计师': `
-        <tr>
-            <td class="cat-cell" rowspan="4">岗位与行业认知</td>
-            <td style="text-align:left;">设计趋势洞察</td>
-            <td><span class="score-pill s-high">88</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">UI/UX 设计规范</td>
-            <td><span class="score-pill s-high">85</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">设计师职责认知</td>
-            <td><span class="score-pill s-high">80</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">设计系统思维</td>
-            <td><span class="score-pill s-mid">65</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="4">专业技能</td>
-            <td style="text-align:left;">Figma/Sketch 设计</td>
-            <td><span class="score-pill s-high">90</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">视觉设计规范</td>
-            <td><span class="score-pill s-high">88</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">交互设计原理</td>
-            <td><span class="score-pill s-mid">62</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">设计交付与标注</td>
-            <td><span class="score-pill s-high">86</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="4">软技能</td>
-            <td style="text-align:left;">审美与创意表达</td>
-            <td><span class="score-pill s-high">92</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">设计提案表达</td>
-            <td><span class="score-pill s-high">78</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">用户同理心</td>
-            <td><span class="score-pill s-high">85</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">设计反馈处理</td>
-            <td><span class="score-pill s-high">72</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="3">项目经验</td>
-            <td style="text-align:left;">完整设计项目</td>
-            <td><span class="score-pill s-high">84</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">设计评审经验</td>
-            <td><span class="score-pill s-high">76</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">设计走查配合</td>
-            <td><span class="score-pill s-high">80</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td class="cat-cell" rowspan="3">工具应用</td>
-            <td style="text-align:left;">Figma 高级功能</td>
-            <td><span class="score-pill s-high">88</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">动效设计工具</td>
-            <td><span class="score-pill s-mid">66</span></td>
-            <td><span class="lvl lvl-zhang">掌握 L4</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-fail">✗ 不通过</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;">素材管理平台</td>
-            <td><span class="score-pill s-high">82</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="lvl lvl-shu">熟练 L5</span></td>
-            <td><span class="res-pass">✓ 通过</span></td>
-        </tr>
-    `
-};
-
-function renderRadar(data) {
-    if (!radarChart) return;
-    radarChart.setOption({
-        tooltip: { trigger: 'item' },
-        radar: {
-            indicator: [
-                { name: '岗位认知', max: 100 },
-                { name: '专业技能', max: 100 },
-                { name: '软技能', max: 100 },
-                { name: '项目经验', max: 100 },
-                { name: '工具应用', max: 100 }
-            ],
-            radius: 85,
-            splitNumber: 4,
-            axisName: { color: '#475569', fontSize: 11, fontWeight: 500 },
-            splitArea: {
-                areaStyle: { color: ['rgba(59,130,246,0.03)','rgba(59,130,246,0.07)','rgba(59,130,246,0.10)','rgba(59,130,246,0.14)'] }
-            },
-            splitLine: { lineStyle: { color: 'rgba(59,130,246,0.2)' } },
-            axisLine: { lineStyle: { color: 'rgba(59,130,246,0.3)' } }
-        },
-        series: [{
-            type: 'radar',
-            data: [{
-                value: data,
-                name: '当前能力',
-                areaStyle: {
-                    color: { type: 'radial', x: 0.5, y: 0.5, r: 0.5,
-                        colorStops: [
-                            { offset: 0, color: 'rgba(59,130,246,0.6)' },
-                            { offset: 1, color: 'rgba(99,102,241,0.3)' }
-                        ]}
-                },
-                lineStyle: { color: '#3b82f6', width: 2 },
-                itemStyle: { color: '#2563eb' },
-                symbol: 'circle',
-                symbolSize: 5
-            }]
-        }]
+function renderEval(domains){
+  const el=document.getElementById('evalBody');
+  el.innerHTML='';
+  domains.forEach(d=>{
+    let rows='';
+    d.rows.forEach(r=>{
+      rows+=`<div class="ev-row">
+        <div class="ev-pt">${r.pt}</div>
+        <div class="ev-score-c"><div class="ev-score ${r.st}">${r.score}</div></div>
+        <div class="ev-comp"><div class="ev-bar">
+          <div class="ev-fill ${r.st}" data-w="${r.score}" style="width:0">${r.score}</div>
+          <div class="bench" style="left:${r.bench}%">${flagSVG('#94a0be')}<span class="line"></span></div>
+        </div></div>
+        <div class="req"><span class="lv gray"><span class="dot"></span>${r.req}</span></div>
+        <div class="res"><span class="rs ${resMap[r.st][0]}">${resMap[r.st][1]}</span></div>
+      </div>`;
     });
-}
-if (radarChart) {
-    renderRadar(dataMap['前端开发工程师']);
-    window.addEventListener('resize', () => radarChart && radarChart.resize());
+    el.insertAdjacentHTML('beforeend',`<div class="ev-dom ${d.cls}">
+      <div class="ev-dname"><span class="dn">${d.name}</span><span class="davg">均分 <b>${d.avg}</b></span></div>
+      <div class="ev-rows">${rows}</div>
+    </div>`);
+  });
+  setTimeout(()=>document.querySelectorAll('.ev-fill').forEach(f=>f.style.width=f.dataset.w+'%'),50);
 }
 
-function switchTab(el, key) {
-    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    renderRadar(dataMap[key]);
-    
-    // 更新四个指标
-    const s = scoreMap[key];
-    document.getElementById('scorePct').textContent = s.pct;
-    document.getElementById('competencyVal').textContent = s.competency;
-    document.getElementById('scoreVal').textContent = s.score;
-    document.getElementById('gradeLabel').textContent = s.grade;
-    
-    // 更新能力画像表
-    document.getElementById('abilityBody').innerHTML = abilityMap[key];
+function renderStats(stats){
+  const els=document.querySelectorAll('.stat .v');
+  if(els.length>=4){els[0].textContent=stats[0];els[1].textContent=stats[1];els[2].textContent=stats[2];els[3].textContent=stats[3];}
+  document.querySelector('.radar-center .big').textContent=stats[0];
 }
+
+function renderDesc(desc,tags){
+  const note=document.querySelector('.note');
+  note.innerHTML=`<div class="nt"><span class="d">i</span>能力说明</div><p>${desc}</p>
+    <div class="nt" style="margin-top:11px;"><span class="d">↑</span>能力提升建议</div>
+    <div class="adv">${tags.map(t=>`<span class="t">${t}</span>`).join('')}</div>`;
+}
+
+/* ---------- 默认渲染 ---------- */
+(function init(){
+  const first=positionData['前端开发工程师'];
+  renderRadar(first.stu,first.need);
+  renderEval(first.domains);
+  renderStats(first.stats);
+  document.querySelector('.radar-center .big').textContent=first.center;
+  renderDesc(first.desc,first.tags);
+})();
+
+/* ---------- Tab 切换 ---------- */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=function(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  this.classList.add('on');
+  const key=this.textContent.trim();
+  const data=positionData[key];
+  if(!data)return;
+  renderRadar(data.stu,data.need);
+  renderEval(data.domains);
+  renderStats(data.stats);
+  document.querySelector('.radar-center .big').textContent=data.center;
+  renderDesc(data.desc,data.tags);
+});
 </script>
 </body>
 </html>

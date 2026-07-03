@@ -14,7 +14,7 @@ import './globals.css'
 // const geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: '能力测评中心',
+  title: '能力评价与测评资源管理平台',
   description: '题库、组卷、试卷、岗位能力认证、毕业设计、学生能力画像管理系统',
 }
 

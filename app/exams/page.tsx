@@ -394,7 +394,7 @@ export default function ExamsPage() {
               filteredExams.map((exam) => {
                 const isSelected = selectedIds.includes(exam.id)
                 return (
-                  <TableRow key={exam.id} className={cn(isSelected && "bg-primary/5")}>
+                  <TableRow key={exam.id} className={cn("group", isSelected && "bg-primary/5")}>
                     <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
                       <Checkbox
                         checked={isSelected}
@@ -427,7 +427,7 @@ export default function ExamsPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">{formatDate(exam.createdAt)}</TableCell>
                     <TableCell className="text-muted-foreground">{formatDate(exam.updatedAt)}</TableCell>
-                    <TableCell className="sticky right-0 bg-white text-right">
+                    <TableCell className="sticky right-0 bg-white text-right relative">
                       <ExamStatusActions
                         status={exam.status}
                         onEdit={() => handleEdit(exam)}

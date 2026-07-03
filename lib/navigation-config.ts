@@ -1,15 +1,15 @@
 import type { PlatformNavigationConfig } from "@/components/platform-shell"
 
 export const evaluationNavigationConfig: PlatformNavigationConfig = {
-  brandTitle: "能力测评中心",
+  brandTitle: "能力评价与测评资源管理平台",
   currentPlatformId: "evaluation",
-  currentPlatformLabel: "能力测评中心",
+  currentPlatformLabel: "能力评价与测评资源管理平台",
   brandHref: "/",
   brandIcon: "settings",
   platformIcon: "settings",
   sideBackHref: "/",
   currentUserName: "管理员",
-  currentUserRoleLabel: "能力测评中心",
+  currentUserRoleLabel: "能力评价与测评资源管理平台",
   showCurrentTime: true,
   userMenuItems: [
     { id: "profile", label: "个人中心", icon: "user" },
