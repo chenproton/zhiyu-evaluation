@@ -9,7 +9,6 @@ import {
   Check,
   Users,
   FileSpreadsheet,
-  X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,11 +29,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
 import { PageHeaderCard } from "@/components/shared/page-header-card"
 import { useData } from "@/components/providers/data-provider"
 import { mockStudents } from "@/lib/mock-data"
-import type { MicroCertTemplate } from "@/lib/types"
+
+type IssueMode = "manual" | "batch" | null
 
 export default function MicroCertIssuancePage() {
   const {
@@ -45,17 +44,14 @@ export default function MicroCertIssuancePage() {
 
   const [expireDate, setExpireDate] = useState("")
   const [selectedTemplateIds, setSelectedTemplateIds] = useState<Set<string>>(new Set())
+  const [issueMode, setIssueMode] = useState<IssueMode>(null)
 
-  // Manual issuance
-  const [manualDialogOpen, setManualDialogOpen] = useState(false)
   const [studentSearch, setStudentSearch] = useState("")
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(new Set())
 
-  // Batch issuance
   const [batchRows, setBatchRows] = useState<{ studentName: string; studentId: string; className: string }[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Success dialog
   const [successOpen, setSuccessOpen] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
 
@@ -102,14 +98,15 @@ export default function MicroCertIssuancePage() {
     )
   }
 
-  const openManualDialog = () => {
-    if (selectedTemplateIds.size === 0) {
+  const switchMode = (mode: IssueMode) => {
+    if (mode !== null && selectedTemplateIds.size === 0) {
       alert("请先选择证书模板")
       return
     }
+    setIssueMode(mode)
     setStudentSearch("")
     setSelectedStudentIds(new Set())
-    setManualDialogOpen(true)
+    setBatchRows([])
   }
 
   const handleManualIssue = () => {
@@ -151,7 +148,6 @@ export default function MicroCertIssuancePage() {
     }
 
     issueBatchCerts(records)
-    setManualDialogOpen(false)
     setSelectedStudentIds(new Set())
     setSuccessMessage(`成功颁发 ${records.length} 份证书`)
     setSuccessOpen(true)
@@ -170,21 +166,13 @@ export default function MicroCertIssuancePage() {
       for (let i = 1; i < lines.length; i++) {
         const cols = lines[i].split(",").map((c) => c.trim())
         if (cols.length >= 3) {
-          rows.push({
-            studentName: cols[0],
-            studentId: cols[1],
-            className: cols[2],
-          })
+          rows.push({ studentName: cols[0], studentId: cols[1], className: cols[2] })
         }
       }
-
       setBatchRows(rows)
     }
     reader.readAsText(file)
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
   const downloadTemplate = () => {
@@ -199,14 +187,7 @@ export default function MicroCertIssuancePage() {
   }
 
   const handleBatchIssue = () => {
-    if (selectedTemplateIds.size === 0) {
-      alert("请先选择证书模板")
-      return
-    }
-    if (batchRows.length === 0) {
-      alert("请先上传学生名单")
-      return
-    }
+    if (selectedTemplateIds.size === 0 || batchRows.length === 0) return
 
     const records: Array<{
       templateId: string
@@ -296,100 +277,38 @@ export default function MicroCertIssuancePage() {
             className="w-44"
           />
           {selectedTemplates.length > 0 && (
-            <span className="text-xs text-slate-500 ml-2">
-              已选 {selectedTemplates.length} 个模板：
-              {selectedTemplates.map((t) => t.title).join("、")}
+            <span className="text-xs text-slate-500">
+              已选 {selectedTemplates.length} 个模板
             </span>
           )}
         </div>
       </div>
 
-      {/* Two Buttons */}
+      {/* Mode Buttons */}
       <div className="flex items-center gap-4 mb-4">
-        <Button size="sm" onClick={openManualDialog}>
+        <Button
+          size="sm"
+          variant={issueMode === "manual" ? "default" : "outline"}
+          onClick={() => switchMode("manual")}
+        >
           <Users className="mr-1.5 size-4" />
           手动颁发
         </Button>
-        <Button size="sm" variant="outline" onClick={() => {
-          if (selectedTemplateIds.size === 0) {
-            alert("请先选择证书模板")
-            return
-          }
-          setBatchRows([])
-        }}>
+        <Button
+          size="sm"
+          variant={issueMode === "batch" ? "default" : "outline"}
+          onClick={() => switchMode("batch")}
+        >
           <Upload className="mr-1.5 size-4" />
           批量颁发
         </Button>
-        {batchRows.length > 0 && (
-          <Button size="sm" variant="default" onClick={handleBatchIssue} className="ml-auto">
-            <Send className="mr-1 size-3.5" />
-            确认批量颁发 ({batchRows.length}人 × {selectedTemplateIds.size}模板 = {batchRows.length * selectedTemplateIds.size}份)
-          </Button>
-        )}
       </div>
 
-      {/* Batch Upload Area */}
-      {batchRows.length > 0 && (
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[60px]">序号</TableHead>
-                <TableHead>姓名</TableHead>
-                <TableHead>学号</TableHead>
-                <TableHead>班级</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {batchRows.map((row, idx) => (
-                <TableRow key={idx}>
-                  <TableCell className="text-slate-500">{idx + 1}</TableCell>
-                  <TableCell className="font-medium">{row.studentName}</TableCell>
-                  <TableCell className="text-slate-500">{row.studentId}</TableCell>
-                  <TableCell className="text-slate-500">{row.className}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
-      {/* Batch Upload Empty State */}
-      <div className="text-center py-12 border rounded-lg bg-slate-50">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv,.txt"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-            <Upload className="mr-1.5 size-4" />
-            上传名单文件 (CSV)
-          </Button>
-          <Button variant="ghost" size="sm" onClick={downloadTemplate}>
-            <Download className="mr-1.5 size-3.5" />
-            下载导入模板
-          </Button>
-        </div>
-        <p className="text-sm text-slate-400">
-          请上传 CSV 格式的学生名单文件，第一行为标题行（姓名,学号,班级）
-        </p>
-      </div>
-
-      {/* Manual Issue Student Dialog */}
-      <Dialog open={manualDialogOpen} onOpenChange={setManualDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>选择学生</DialogTitle>
-            <DialogDescription>
-              为已选模板颁发证书，共 {selectedTemplates.length} 个模板
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex gap-4 items-center py-2 shrink-0">
-            <div className="relative flex-1">
+      {/* Manual Issuance - Student List */}
+      {issueMode === "manual" && (
+        <div>
+          <div className="flex gap-4 mb-4 items-center">
+            <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
               <Input
                 placeholder="搜索学生姓名/学号/班级..."
@@ -401,9 +320,15 @@ export default function MicroCertIssuancePage() {
             <span className="text-sm text-slate-500 whitespace-nowrap">
               已选 {selectedStudentIds.size} 人
             </span>
+            {selectedStudentIds.size > 0 && (
+              <Button size="sm" onClick={handleManualIssue}>
+                <Send className="mr-1 size-3.5" />
+                颁发证书 ({selectedStudentIds.size}人 × {selectedTemplateIds.size}模板 = {selectedStudentIds.size * selectedTemplateIds.size}份)
+              </Button>
+            )}
           </div>
 
-          <div className="border rounded-lg overflow-y-auto flex-1">
+          <div className="border rounded-lg">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -416,7 +341,7 @@ export default function MicroCertIssuancePage() {
                   <TableHead>姓名</TableHead>
                   <TableHead>学号</TableHead>
                   <TableHead>班级</TableHead>
-                  <TableHead>当前模板颁发状态</TableHead>
+                  <TableHead className="w-[200px]">当前模板颁发状态</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -435,17 +360,17 @@ export default function MicroCertIssuancePage() {
                       <TableCell className="text-slate-500">{student.id}</TableCell>
                       <TableCell className="text-slate-500">{student.className}</TableCell>
                       <TableCell>
-                        {unissuedTemplates.length === 0 ? (
+                        {selectedTemplateIds.size === 0 ? (
+                          <span className="text-xs text-slate-400">未选择模板</span>
+                        ) : unissuedTemplates.length === 0 ? (
                           <span className="px-2 py-0.5 text-xs rounded-full bg-green-50 text-green-600">
                             已全部颁发
                           </span>
                         ) : (
                           <div className="flex flex-wrap gap-1">
-                            {unissuedTemplates.length > 0 && (
-                              <span className="px-2 py-0.5 text-xs rounded-full bg-blue-50 text-blue-600">
-                                待颁发 {unissuedTemplates.length}
-                              </span>
-                            )}
+                            <span className="px-2 py-0.5 text-xs rounded-full bg-blue-50 text-blue-600">
+                              待颁发 {unissuedTemplates.length}
+                            </span>
                             {issuedTemplates.length > 0 && (
                               <span className="px-2 py-0.5 text-xs rounded-full bg-green-50 text-green-600">
                                 已颁发 {issuedTemplates.length}
@@ -460,18 +385,94 @@ export default function MicroCertIssuancePage() {
               </TableBody>
             </Table>
           </div>
+        </div>
+      )}
 
-          <DialogFooter className="shrink-0">
-            <Button variant="outline" onClick={() => setManualDialogOpen(false)}>
-              取消
-            </Button>
-            <Button onClick={handleManualIssue} disabled={selectedStudentIds.size === 0}>
-              <Send className="mr-1.5 size-4" />
-              颁发证书 ({selectedStudentIds.size}人 × {selectedTemplateIds.size}模板 = {selectedStudentIds.size * selectedTemplateIds.size}份)
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Batch Issuance - Upload Card */}
+      {issueMode === "batch" && (
+        <div>
+          {batchRows.length === 0 ? (
+            <div className="text-center py-12 border rounded-lg bg-slate-50">
+              <FileSpreadsheet className="size-8 text-slate-300 mx-auto mb-3" />
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,.txt"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="mr-1.5 size-4" />
+                  上传名单文件 (CSV)
+                </Button>
+                <Button variant="ghost" size="sm" onClick={downloadTemplate}>
+                  <Download className="mr-1.5 size-3.5" />
+                  下载导入模板
+                </Button>
+              </div>
+              <p className="text-sm text-slate-400">
+                请上传 CSV 格式的学生名单文件，第一行为标题行（姓名,学号,班级）
+              </p>
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center gap-4 mb-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,.txt"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="mr-1.5 size-4" />
+                  重新上传
+                </Button>
+                <Button variant="ghost" size="sm" onClick={downloadTemplate}>
+                  <Download className="mr-1.5 size-3.5" />
+                  下载导入模板
+                </Button>
+                <Button size="sm" onClick={handleBatchIssue} className="ml-auto">
+                  <Send className="mr-1 size-3.5" />
+                  确认批量颁发 ({batchRows.length}人 × {selectedTemplateIds.size}模板 = {batchRows.length * selectedTemplateIds.size}份)
+                </Button>
+              </div>
+
+              <div className="border rounded-lg">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[60px]">序号</TableHead>
+                      <TableHead>姓名</TableHead>
+                      <TableHead>学号</TableHead>
+                      <TableHead>班级</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {batchRows.map((row, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell className="text-slate-500">{idx + 1}</TableCell>
+                        <TableCell className="font-medium">{row.studentName}</TableCell>
+                        <TableCell className="text-slate-500">{row.studentId}</TableCell>
+                        <TableCell className="text-slate-500">{row.className}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* No mode selected tip */}
+      {issueMode === null && (
+        <div className="text-center py-12 border rounded-lg bg-slate-50">
+          <Users className="size-8 text-slate-300 mx-auto mb-3" />
+          <p className="text-sm text-slate-400">请先选择证书模板，然后点击上方按钮选择手动或批量颁发方式</p>
+        </div>
+      )}
 
       {/* Success Dialog */}
       <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
