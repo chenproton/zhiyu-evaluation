@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { useRouter } from "next/navigation"
 import {
   Search,
   FileText,
@@ -39,20 +38,11 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { PageHeaderCard } from "@/components/shared/page-header-card"
 import { useData } from "@/components/providers/data-provider"
 import type { CertIssuanceRecord } from "@/lib/types"
-import { cn } from "@/lib/utils"
-
-const TABS = [
-  { id: "templates", label: "微证书模板管理", href: "/micro-certificates/templates" },
-  { id: "issuance", label: "证书颁发", href: "/micro-certificates/issuance" },
-  { id: "history", label: "颁发历史记录", href: "/micro-certificates/history" },
-]
 
 export default function MicroCertHistoryPage() {
-  const router = useRouter()
   const {
     certIssuanceRecords,
     revokeCert,
-    microCertTemplates,
     certTypes,
   } = useData()
 
@@ -125,24 +115,6 @@ export default function MicroCertHistoryPage() {
         description="查看所有证书颁发记录，支持撤销已颁发的证书"
         stats={stats}
       />
-
-      {/* Tab Navigation */}
-      <div className="flex gap-1 mt-4 mb-4 border-b border-slate-200">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => router.push(tab.href)}
-            className={cn(
-              "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors",
-              tab.id === "history"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-slate-500 hover:text-slate-700"
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
 
       {/* Search & Filters */}
       <div className="flex gap-4 mb-4 flex-wrap">
