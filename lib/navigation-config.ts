@@ -31,7 +31,16 @@ export const evaluationNavigationConfig: PlatformNavigationConfig = {
         { id: "exams", label: "试卷管理", href: "/exams", matchers: ["/exams"] },
         { id: "exam-usage", label: "考试管理", href: "/exam-usage", matchers: ["/exam-usage$", "/exam-usage/results"] },
         { id: "approval-center", label: "审批中心", href: "/approval-center", matchers: ["/approval-center"] },
-        { id: "micro-certificates", label: "微证书管理", href: "/micro-certificates/templates", matchers: ["/micro-certificates"] },
+      ],
+    },
+    {
+      id: "micro-certificates",
+      label: "微证书管理",
+      icon: "badgeCheck",
+      children: [
+        { id: "mc-templates", label: "微证书模板管理", href: "/micro-certificates/templates", matchers: ["/micro-certificates/templates"] },
+        { id: "mc-issuance", label: "证书颁发", href: "/micro-certificates/issuance", matchers: ["/micro-certificates/issuance"] },
+        { id: "mc-history", label: "颁发历史记录", href: "/micro-certificates/history", matchers: ["/micro-certificates/history"] },
       ],
     },
     {
