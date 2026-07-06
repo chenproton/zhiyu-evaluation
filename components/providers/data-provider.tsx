@@ -38,6 +38,10 @@ import type {
   OnlineClassroom,
   SmartCourse,
   AbilityItem,
+  CertType,
+  MicroCertTemplate,
+  CertIssuanceRecord,
+  MicroCertTemplateFormData,
 } from '@/lib/types'
 import { getNextStatus, canPerformAction } from '@/lib/types'
 import {
@@ -71,6 +75,9 @@ import {
   mockSmartCourses,
   positionAbilityItemsMap,
   abilityItems,
+  mockCertTypes,
+  mockMicroCertTemplates,
+  mockCertIssuanceRecords,
 } from '@/lib/mock-data'
 
 interface DataContextValue {
@@ -174,6 +181,18 @@ interface DataContextValue {
   updateStudentAbilityPortrait: (id: string, data: Partial<StudentAbilityPortrait>) => void
   updateCreditConversionRules: (rules: CreditConversionRule[]) => void
   updatePortraitUpdateConfig: (config: Partial<PortraitUpdateConfig>) => void
+
+  // 微证书管理
+  certTypes: CertType[]
+  updateCertTypes: (types: CertType[]) => void
+  microCertTemplates: MicroCertTemplate[]
+  createMicroCertTemplate: (data: MicroCertTemplateFormData) => MicroCertTemplate
+  updateMicroCertTemplate: (id: string, data: MicroCertTemplateFormData) => void
+  deleteMicroCertTemplate: (id: string) => void
+  certIssuanceRecords: CertIssuanceRecord[]
+  issueCert: (data: Omit<CertIssuanceRecord, 'id' | 'certNumber' | 'status'>) => CertIssuanceRecord
+  issueBatchCerts: (records: Omit<CertIssuanceRecord, 'id' | 'certNumber' | 'status'>[]) => CertIssuanceRecord[]
+  revokeCert: (id: string, reason: string) => void
 }
 
 const DataContext = createContext<DataContextValue | null>(null)
@@ -225,6 +244,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     queryTimeStart: '08:00',
     queryTimeEnd: '22:00',
   })
+
+  // 微证书管理状态
+  const [certTypes, setCertTypes] = useState<CertType[]>(mockCertTypes)
+  const [microCertTemplates, setMicroCertTemplates] = useState<MicroCertTemplate[]>(mockMicroCertTemplates)
+  const [certIssuanceRecords, setCertIssuanceRecords] = useState<CertIssuanceRecord[]>(mockCertIssuanceRecords)
 
   const approveItem = useCallback((id: string, remark?: string) => {
     setApprovalItems((prev) =>
@@ -753,6 +777,73 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     updateEvaluationStandard: (id: string, data: Partial<EvaluationStandard>) => {
       setEvaluationStandards((prev) =>
         prev.map((s) => (s.id === id ? { ...s, ...data } : s))
+      )
+    },
+
+    // 微证书管理
+    certTypes,
+    updateCertTypes: (types: CertType[]) => {
+      setCertTypes(types)
+    },
+    microCertTemplates,
+    createMicroCertTemplate: (data: MicroCertTemplateFormData) => {
+      const certTypeName = certTypes.find((t) => t.id === data.certTypeId)?.name || '未知'
+      const newTemplate: MicroCertTemplate = {
+        id: `mct-${Date.now()}`,
+        title: data.title,
+        certTypeId: data.certTypeId,
+        certTypeName,
+        content: data.content,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      setMicroCertTemplates((prev) => [...prev, newTemplate])
+      return newTemplate
+    },
+    updateMicroCertTemplate: (id: string, data: MicroCertTemplateFormData) => {
+      const certTypeName = certTypes.find((t) => t.id === data.certTypeId)?.name || '未知'
+      setMicroCertTemplates((prev) =>
+        prev.map((t) =>
+          t.id === id ? { ...t, ...data, certTypeName, updatedAt: new Date() } : t
+        )
+      )
+    },
+    deleteMicroCertTemplate: (id: string) => {
+      setMicroCertTemplates((prev) => prev.filter((t) => t.id !== id))
+    },
+    certIssuanceRecords,
+    issueCert: (data) => {
+      let counter = 100 + certIssuanceRecords.length
+      const newRecord: CertIssuanceRecord = {
+        id: `cir-${Date.now()}`,
+        ...data,
+        certNumber: `MC-2024-${String(counter).padStart(5, '0')}`,
+        status: 'issued',
+      }
+      setCertIssuanceRecords((prev) => [...prev, newRecord])
+      return newRecord
+    },
+    issueBatchCerts: (records) => {
+      let counter = 100 + certIssuanceRecords.length
+      const newRecords = records.map((data) => {
+        counter++
+        return {
+          id: `cir-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          ...data,
+          certNumber: `MC-2024-${String(counter).padStart(5, '0')}`,
+          status: 'issued' as const,
+        }
+      })
+      setCertIssuanceRecords((prev) => [...prev, ...newRecords])
+      return newRecords
+    },
+    revokeCert: (id: string, reason: string) => {
+      setCertIssuanceRecords((prev) =>
+        prev.map((r) =>
+          r.id === id
+            ? { ...r, status: 'revoked' as const, revokedAt: new Date(), revokeReason: reason }
+            : r
+        )
       )
     },
 

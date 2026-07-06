@@ -31,6 +31,7 @@ export const evaluationNavigationConfig: PlatformNavigationConfig = {
         { id: "exams", label: "试卷管理", href: "/exams", matchers: ["/exams"] },
         { id: "exam-usage", label: "考试管理", href: "/exam-usage", matchers: ["/exam-usage$", "/exam-usage/results"] },
         { id: "approval-center", label: "审批中心", href: "/approval-center", matchers: ["/approval-center"] },
+        { id: "micro-certificates", label: "微证书管理", href: "/micro-certificates/templates", matchers: ["/micro-certificates"] },
       ],
     },
     {
