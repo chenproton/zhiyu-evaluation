@@ -12,6 +12,14 @@ import {
   Check,
   ImageIcon,
   Upload,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  Heading1,
+  Heading2,
+  Heading3,
+  Type,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -68,6 +76,7 @@ export default function MicroCertTemplatesPage() {
   const [formContent, setFormContent] = useState("")
   const [formCoverUrl, setFormCoverUrl] = useState<string>("")
   const coverFileInputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const [editingTypes, setEditingTypes] = useState<CertType[]>([])
   const [newTypeName, setNewTypeName] = useState("")
@@ -122,6 +131,23 @@ export default function MicroCertTemplatesPage() {
       return
     }
     setFormCoverUrl(URL.createObjectURL(file))
+  }
+
+  const insertTag = (openTag: string, closeTag: string) => {
+    const el = textareaRef.current
+    if (!el) return
+    const start = el.selectionStart
+    const end = el.selectionEnd
+    const selectedText = formContent.substring(start, end)
+    const before = formContent.substring(0, start)
+    const after = formContent.substring(end)
+    const newText = before + openTag + (selectedText || "") + closeTag + after
+    setFormContent(newText)
+    setTimeout(() => {
+      el.focus()
+      const cursorPos = selectedText ? start + openTag.length + selectedText.length + closeTag.length : start + openTag.length
+      el.setSelectionRange(cursorPos, cursorPos)
+    }, 0)
   }
 
   const removeCover = () => {
@@ -381,15 +407,96 @@ export default function MicroCertTemplatesPage() {
               </Field>
               <Field>
                 <FieldLabel htmlFor="cert-content">证书内容（富文本）</FieldLabel>
-                <Textarea
-                  id="cert-content"
-                  value={formContent}
-                  onChange={(e) => setFormContent(e.target.value)}
-                  placeholder="请输入证书内容（支持HTML富文本）"
-                  rows={12}
-                  className="font-mono text-sm"
-                  required
-                />
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 bg-slate-50 border-b">
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<b>", "</b>")}
+                      className="p-1.5 rounded hover:bg-slate-200 text-slate-600"
+                      title="加粗"
+                    >
+                      <Bold className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<i>", "</i>")}
+                      className="p-1.5 rounded hover:bg-slate-200 text-slate-600"
+                      title="斜体"
+                    >
+                      <Italic className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<u>", "</u>")}
+                      className="p-1.5 rounded hover:bg-slate-200 text-slate-600"
+                      title="下划线"
+                    >
+                      <Underline className="size-3.5" />
+                    </button>
+                    <span className="w-px h-5 bg-slate-200 mx-1" />
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<h2>", "</h2>")}
+                      className="p-1.5 rounded hover:bg-slate-200 text-slate-600"
+                      title="标题 H2"
+                    >
+                      <Heading2 className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<h3>", "</h3>")}
+                      className="p-1.5 rounded hover:bg-slate-200 text-slate-600"
+                      title="标题 H3"
+                    >
+                      <Heading3 className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<p>", "</p>")}
+                      className="p-1.5 rounded hover:bg-slate-200 text-slate-600"
+                      title="段落"
+                    >
+                      <Type className="size-3.5" />
+                    </button>
+                    <span className="w-px h-5 bg-slate-200 mx-1" />
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<ul><li>", "</li>\n</ul>")}
+                      className="p-1.5 rounded hover:bg-slate-200 text-slate-600"
+                      title="无序列表"
+                    >
+                      <List className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<span style=\"color:red\">", "</span>")}
+                      className="px-2 py-1 text-xs rounded hover:bg-slate-200 text-red-500 font-medium"
+                      title="红色文字"
+                    >
+                      A
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertTag("<span style=\"color:#d4a017\">", "</span>")}
+                      className="px-2 py-1 text-xs rounded hover:bg-slate-200 font-medium"
+                      style={{ color: "#d4a017" }}
+                      title="金色文字"
+                    >
+                      A
+                    </button>
+                    <div className="ml-auto text-xs text-slate-400">预览：选中文本后点击按钮插入标签</div>
+                  </div>
+                  <Textarea
+                    id="cert-content"
+                    ref={textareaRef}
+                    value={formContent}
+                    onChange={(e) => setFormContent(e.target.value)}
+                    placeholder="请输入证书内容（支持HTML富文本）"
+                    rows={12}
+                    className="font-mono text-sm border-0 rounded-t-none focus-visible:ring-0"
+                    required
+                  />
+                </div>
               </Field>
             </FieldGroup>
             <DialogFooter>
