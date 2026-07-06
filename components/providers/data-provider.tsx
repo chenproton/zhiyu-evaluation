@@ -794,6 +794,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         certTypeId: data.certTypeId,
         certTypeName,
         content: data.content,
+        coverUrl: data.coverUrl,
         createdAt: new Date(),
         updatedAt: new Date(),
       }

@@ -854,6 +854,7 @@ export interface MicroCertTemplate {
   certTypeId: string
   certTypeName: string
   content: string
+  coverUrl?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -885,4 +886,5 @@ export interface MicroCertTemplateFormData {
   title: string
   certTypeId: string
   content: string
+  coverUrl?: string
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef } from "react"
 import {
   Plus,
   Search,
@@ -10,6 +10,8 @@ import {
   Settings,
   X,
   Check,
+  ImageIcon,
+  Upload,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -64,6 +66,8 @@ export default function MicroCertTemplatesPage() {
   const [formTitle, setFormTitle] = useState("")
   const [formCertTypeId, setFormCertTypeId] = useState("")
   const [formContent, setFormContent] = useState("")
+  const [formCoverUrl, setFormCoverUrl] = useState<string>("")
+  const coverFileInputRef = useRef<HTMLInputElement>(null)
 
   const [editingTypes, setEditingTypes] = useState<CertType[]>([])
   const [newTypeName, setNewTypeName] = useState("")
@@ -73,6 +77,7 @@ export default function MicroCertTemplatesPage() {
     setFormTitle("")
     setFormCertTypeId("")
     setFormContent("")
+    setFormCoverUrl("")
     setFormOpen(true)
   }
 
@@ -81,6 +86,7 @@ export default function MicroCertTemplatesPage() {
     setFormTitle(template.title)
     setFormCertTypeId(template.certTypeId)
     setFormContent(template.content)
+    setFormCoverUrl(template.coverUrl || "")
     setFormOpen(true)
   }
 
@@ -104,6 +110,25 @@ export default function MicroCertTemplatesPage() {
     setNewTypeName("")
   }
 
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      alert("文件大小不能超过 5MB")
+      return
+    }
+    if (!file.type.startsWith("image/")) {
+      alert("请上传图片文件")
+      return
+    }
+    setFormCoverUrl(URL.createObjectURL(file))
+  }
+
+  const removeCover = () => {
+    setFormCoverUrl("")
+    if (coverFileInputRef.current) coverFileInputRef.current.value = ""
+  }
+
   const removeCertType = (id: string) => {
     setEditingTypes(editingTypes.filter((t) => t.id !== id))
   }
@@ -121,6 +146,7 @@ export default function MicroCertTemplatesPage() {
       title: formTitle.trim(),
       certTypeId: formCertTypeId,
       content: formContent.trim(),
+      coverUrl: formCoverUrl || undefined,
     }
 
     if (editingTemplate) {
@@ -281,7 +307,7 @@ export default function MicroCertTemplatesPage() {
 
       {/* Create/Edit Form Dialog */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{editingTemplate ? "编辑模板" : "新建模板"}</DialogTitle>
             <DialogDescription>
@@ -289,7 +315,7 @@ export default function MicroCertTemplatesPage() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleFormSubmit}>
-            <FieldGroup className="max-h-[60vh] overflow-y-auto py-4">
+            <FieldGroup className="max-h-[70vh] overflow-y-auto py-4">
               <Field>
                 <FieldLabel htmlFor="cert-title">证书标题</FieldLabel>
                 <Input
@@ -318,13 +344,50 @@ export default function MicroCertTemplatesPage() {
                 </Select>
               </Field>
               <Field>
-                <FieldLabel htmlFor="cert-content">证书内容</FieldLabel>
+                <FieldLabel>证书封面</FieldLabel>
+                <input
+                  ref={coverFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverUpload}
+                  className="hidden"
+                />
+                {formCoverUrl ? (
+                  <div className="relative mt-2 w-full overflow-hidden rounded-lg border">
+                    <img
+                      src={formCoverUrl}
+                      alt="封面预览"
+                      className="h-40 w-full object-cover"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute right-2 top-2 size-6"
+                      onClick={removeCover}
+                    >
+                      <X className="size-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => coverFileInputRef.current?.click()}
+                    className="mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 transition-colors hover:border-muted-foreground/50"
+                  >
+                    <Upload className="mb-2 size-8 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">点击上传证书封面</span>
+                  </div>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="cert-content">证书内容（富文本）</FieldLabel>
                 <Textarea
                   id="cert-content"
                   value={formContent}
                   onChange={(e) => setFormContent(e.target.value)}
                   placeholder="请输入证书内容（支持HTML富文本）"
-                  rows={6}
+                  rows={12}
+                  className="font-mono text-sm"
                   required
                 />
               </Field>
