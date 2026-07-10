@@ -745,6 +745,52 @@ export default function LandingHomePage() {
         </section>
         </PrdAnnotation>
 
+      {/* Footer */}
+      <footer style={{background: '#141a2e', marginTop: 60, width: '100vw', position: 'relative', left: 'calc(-50vw + 50%)'}}>
+        <div style={{height: 3, background: 'linear-gradient(90deg, #8b5cf6, #818cf8, #22d3ee)'}} />
+        <div style={{padding: '48px 5% 32px'}}>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 32, maxWidth: 1280, margin: '0 auto'}}>
+            <div>
+              <h3 style={{fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 12}}>场景化数智教学服务平台</h3>
+              <p style={{fontSize: 13, color: '#a8b3cf', lineHeight: 1.8, margin: 0}}>专注职业教育数字化</p>
+              <div style={{fontSize: 12, color: '#6b7a99', marginTop: 8}}>版本：V3.2.1</div>
+              <a href="#" style={{color: '#22d3ee', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 8}}>访问官网 →</a>
+            </div>
+            <div>
+              <h3 style={{fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 12}}>教学资源</h3>
+              <p style={{fontSize: 13, color: '#a8b3cf', lineHeight: 1.8, margin: 0}}>岗位标准、实践场景、企业导师</p>
+              <a href="#" style={{color: '#22d3ee', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 8}}>进入资源商城 →</a>
+            </div>
+            <div>
+              <h3 style={{fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 12}}>技术支持</h3>
+              <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
+                <li style={{fontSize: 13, color: '#a8b3cf', lineHeight: 1.8}}>服务热线：400-888-8888</li>
+                <li style={{fontSize: 13, color: '#a8b3cf', lineHeight: 1.8}}>邮箱：support@example.com</li>
+                <li><a href="#" style={{color: '#22d3ee', fontSize: 13, textDecoration: 'none'}}>使用手册</a></li>
+                <li><a href="#" style={{color: '#22d3ee', fontSize: 13, textDecoration: 'none'}}>常见问题</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 style={{fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 12}}>校内支持</h3>
+              <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
+                <li style={{fontSize: 13, color: '#a8b3cf', lineHeight: 1.8}}>授权院校：XX职业技术学院</li>
+                <li style={{fontSize: 13, color: '#a8b3cf', lineHeight: 1.8}}>校内管理员：张老师</li>
+                <li style={{fontSize: 13, color: '#a8b3cf', lineHeight: 1.8}}>管理员电话：0000-12345678</li>
+              </ul>
+            </div>
+          </div>
+          <hr style={{border: 'none', borderTop: '1px solid #29324a', margin: '40px 0 24px'}} />
+          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, fontSize: 12, color: '#6b7a99', maxWidth: 1280, margin: '0 auto'}}>
+            <div>
+              <a href="#" style={{color: '#6b7a99', textDecoration: 'none'}}>隐私政策</a>
+              <span style={{color: '#29324a'}}>&nbsp;|&nbsp;</span>
+              <a href="#" style={{color: '#6b7a99', textDecoration: 'none'}}>用户协议</a>
+            </div>
+            <div style={{textAlign: 'right'}}>版权所有 © 2020-2026 杭州知与未来科技有限公司 ｜ 软件著作权登记号：2020SR0123456 ｜ 京ICP备2025105397号-1</div>
+          </div>
+        </div>
+      </footer>
+
       </div>
     </div>
   )
