@@ -754,7 +754,7 @@ export default function LandingHomePage() {
               <h3 style={{fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 12}}>场景化数智教学服务平台</h3>
               <p style={{fontSize: 13, color: '#a8b3cf', lineHeight: 1.8, margin: 0}}>专注职业教育数字化</p>
               <div style={{fontSize: 12, color: '#6b7a99', marginTop: 8}}>版本：V3.2.1</div>
-              <a href="#" style={{color: '#22d3ee', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 8}}>访问官网 →</a>
+              <a href="https://www.zhiyu.com.cn/" target="_blank" style={{color: '#22d3ee', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 8}}>访问官网 →</a>
             </div>
             <div>
               <h3 style={{fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 12}}>教学资源</h3>
